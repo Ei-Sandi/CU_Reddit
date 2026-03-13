@@ -1,6 +1,7 @@
 const Koa = require('koa');
 const cors = require('@koa/cors');
 const { loadEnvFile } = require('node:process');
+const db = require('./helpers/database');
 
 try {
     loadEnvFile('.env');
@@ -10,7 +11,13 @@ try {
 
 const SERVER_PORT = process.env.SERVER_PORT || 3000;
 const app = new Koa();
-
 app.use(cors());
-app.listen(SERVER_PORT);
-console.log(`Server running on port ${SERVER_PORT}`);
+
+db.initializeDB()
+    .then(() => {
+        app.listen(SERVER_PORT);
+        console.log(`Server running on port ${SERVER_PORT}`);
+    })
+    .catch((error) => {
+        console.error("Failed to initialize database:", error);
+    });
