@@ -2,6 +2,7 @@ const Koa = require('koa');
 const cors = require('@koa/cors');
 const { loadEnvFile } = require('node:process');
 const db = require('./helpers/database');
+const users = require('./routes/users.js');
 
 try {
     loadEnvFile('.env');
@@ -12,6 +13,7 @@ try {
 const SERVER_PORT = process.env.SERVER_PORT || 3000;
 const app = new Koa();
 app.use(cors());
+app.use(users.routes())
 
 db.initializeDB()
     .then(() => {
