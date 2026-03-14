@@ -1,0 +1,50 @@
+{
+    "definitions": {
+        "userRegistration": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "minLength": 3
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$"
+                },
+                "retypePassword": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "username",
+                "email",
+                "password",
+                "retypePassword"
+            ],
+            "additionalProperties": false
+        },
+        "userLogin": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            },
+            "required": [
+                "email",
+                "password"
+            ],
+            "additionalProperties": false
+        }
+    }
+}
