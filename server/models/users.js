@@ -15,22 +15,11 @@ exports.createNewUser = async function createNewUser(user) {
     return data;
 }
 
-exports.authenticateUser = async function authenticateUser(email, password) {
+exports.getUserByEmail = async function getUserByEmail(email) {
     const query = "SELECT * FROM users WHERE email = ?;";
     
     const rows = await db.run_query(query, [email]);
-    const user = rows[0];
-    
-    if (!user) {
-        return null;
-    } 
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (isMatch) {
-        return user;
-    }
-
-    return null;
+    return rows[0];
 }
 
 exports.deleteUser = async function deleteUser(userID) {
