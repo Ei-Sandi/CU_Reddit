@@ -1,7 +1,9 @@
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const model = require('../models/users');
-const localAuth = require('../controllers/auth');
+const auth = require('../controllers/auth');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRETKEY } = require('../config');
 
 const { validateUserRegistration, validateUserLogin } = require('../controllers/validation');
 
@@ -9,8 +11,8 @@ const prefix = '/api/v1/users';
 const router = new Router({ prefix: prefix });
 
 router.post('/register/', bodyParser(), validateUserRegistration, registerUser);
-router.post('/login/', bodyParser(), validateUserLogin, localAuth, loginUser);
-router.del('/:id', deleteUser);
+router.post('/login/', bodyParser(), validateUserLogin, auth.requireLocal, loginUser);
+router.del('/:id', auth.requireJWT, deleteUser);
 
 async function registerUser(ctx) {
     const body = ctx.request.body;
@@ -50,14 +52,19 @@ async function loginUser(ctx) {
         return;
     }
 
+    const payload = {
+        ID: user.id,
+        username: user.username,
+        role: user.role
+    };
+
+    const token = jwt.sign(payload, JWT_SECRETKEY, { expiresIn: '1h' });
+
     ctx.status = 200;
     ctx.body = {
-        message: "Login Successful.",
-        user: {
-            id: user.id,
-            username: user.username,
-            email: user.email
-        }
+        message: "Login successful",
+        token: token,
+        user: payload
     };
 }
 

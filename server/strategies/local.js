@@ -1,5 +1,5 @@
 const LocalStrategy = require('passport-local').Strategy;
-const users = require('../models/users');
+const model = require('../models/users');
 const bcrypt = require('bcrypt');
 
 const verifyPassword = async function (user, password) {
@@ -10,7 +10,7 @@ const authenticateUser = async (email, password, done) => {
     let user;
     
     try {
-        user = await users.getUserByEmail(email);
+        user = await model.getUserByEmail(email);
     } catch (err) {
         console.error("Error fetching user by email:", err);
         return done(err);

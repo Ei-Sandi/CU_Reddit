@@ -13,3 +13,7 @@ exports.DATABASE_CONFIG = {
     password: process.env.DATABASE_PASSWORD || "password",
     database: process.env.DATABASE_NAME || "cu_reddit"
 }
+
+exports.SERVER_PORT = process.env.SERVER_PORT || 3000;
+
+exports.JWT_SECRETKEY = process.env.JWT_SECRETKEY || "my_super_secure_secret_key_123";
