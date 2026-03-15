@@ -5,8 +5,9 @@ exports.createNewUser = async function createNewUser(user) {
     const query = "INSERT INTO users SET ?";
 
     const password = user.password;
-    const hash = await bcrypt.hashSync(password, 10);
+    const hash = await bcrypt.hash(password, 10);
     user.password = hash;
+    user.role = "member";
 
     delete user.retypePassword;
 
@@ -19,6 +20,13 @@ exports.getUserByEmail = async function getUserByEmail(email) {
     const query = "SELECT * FROM users WHERE email = ?;";
     
     const rows = await db.run_query(query, [email]);
+    return rows[0];
+}
+
+exports.getUserByID = async function getUserByID(userID) {
+    const query = "SELECT * FROM users WHERE id = ?;";
+    
+    const rows = await db.run_query(query, [userID]);
     return rows[0];
 }
 

@@ -23,6 +23,7 @@ exports.initializeDB = async function initializeDB() {
                 username VARCHAR(100) NOT NULL,
                 email VARCHAR(100) NOT NULL,
                 password VARCHAR(100) NOT NULL,
+                role ENUM('member', 'admin') NOT NULL,
                 PRIMARY KEY (id)
             )
         `;
@@ -66,7 +67,7 @@ exports.initializeDB = async function initializeDB() {
         await connection.query(createPostsLikesTable);
 
         const createCommentsLikesTable = `
-            CREATE TABLE IF NOT EXISTS posts_likes (
+            CREATE TABLE IF NOT EXISTS comments_likes (
                 id INT NOT NULL AUTO_INCREMENT, 
                 user_id INT NOT NULL,
                 comment_id INT NOT NULL,
