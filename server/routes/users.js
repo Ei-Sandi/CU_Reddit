@@ -1,12 +1,15 @@
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const model = require('../models/users');
+const localAuth = require('../controllers/auth');
+
 const { validateUserRegistration, validateUserLogin } = require('../controllers/validation');
+
 const prefix = '/api/v1/users';
 const router = new Router({ prefix: prefix });
 
 router.post('/register/', bodyParser(), validateUserRegistration, registerUser);
-router.post('/login/', bodyParser(), validateUserLogin, loginUser);
+router.post('/login/', bodyParser(), validateUserLogin, localAuth, loginUser);
 router.del('/:id', deleteUser);
 
 async function registerUser(ctx) {
@@ -39,30 +42,23 @@ async function registerUser(ctx) {
 }
 
 async function loginUser(ctx) {
-    const { email, password } = ctx.request.body;
-    try {
-        const user = await model.authenticateUser(email, password);
-        if (!user) {
-            ctx.status = 401;
-            ctx.body = { error: "Invalid email or password." };
-            return;
-        }
+    const user = ctx.state.user;
 
-        ctx.status = 200;
-        ctx.body = {
-            message: "Login Successful.",
-            user: {
-                id: user.id,
-                username: user.username,
-                email: user.email
-            }
-        };
-
-    } catch (err) {
-        console.error("Login Error:", err);
-        ctx.status = 500;
-        ctx.body = { error: "Internal Server Error" };
+    if (!user) {
+        ctx.status = 401;
+        ctx.body = { error: "Invalid email or password." };
+        return;
     }
+
+    ctx.status = 200;
+    ctx.body = {
+        message: "Login Successful.",
+        user: {
+            id: user.id,
+            username: user.username,
+            email: user.email
+        }
+    };
 }
 
 async function deleteUser(ctx) {
