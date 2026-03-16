@@ -1,6 +1,7 @@
 const { Validator, ValidationError } = require('jsonschema');
 const userSchema = require('../schemas/user.json').definitions;
 const postSchema = require('../schemas/post.json').definitions;
+const commentSchema = require('../schemas/comment.json').definitions;
 
 const makeKoaValidator = (schema, resource) => {
     const v = new Validator();
@@ -29,3 +30,4 @@ const makeKoaValidator = (schema, resource) => {
 exports.validateUserRegistration = makeKoaValidator(userSchema.userRegistration, 'userRegistration');
 exports.validateUserLogin = makeKoaValidator(userSchema.userLogin, 'userLogin');
 exports.validatePostContent = makeKoaValidator(postSchema.postContent, 'postContent');
+exports.validateCommentContent = makeKoaValidator(commentSchema.commentContent, 'commentContent');
