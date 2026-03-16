@@ -2,7 +2,7 @@ const db = require('../helpers/database');
 const bcrypt = require('bcrypt');
 
 exports.createNewUser = async function createNewUser(user) {
-    const query = "INSERT INTO users SET ?";
+    const query = "INSERT INTO users SET ?;";
 
     const password = user.password;
     const hash = await bcrypt.hash(password, 10);
@@ -16,6 +16,7 @@ exports.createNewUser = async function createNewUser(user) {
     return data;
 }
 
+// Note: This returns password for logging in.
 exports.getUserByEmail = async function getUserByEmail(email) {
     const query = "SELECT * FROM users WHERE email = ?;";
     
@@ -24,14 +25,14 @@ exports.getUserByEmail = async function getUserByEmail(email) {
 }
 
 exports.getUserByID = async function getUserByID(userID) {
-    const query = "SELECT * FROM users WHERE id = ?;";
+    const query = "SELECT id, username, email, role FROM users WHERE id = ?;";
     
     const rows = await db.run_query(query, [userID]);
     return rows[0];
 }
 
 exports.deleteUser = async function deleteUser(userID) {
-    const query = "DELETE FROM users WHERE ID = ?";
+    const query = "DELETE FROM users WHERE id = ?;";
     const data = await db.run_query(query, userID);
     return data;
 }

@@ -10,8 +10,8 @@ const { validateUserRegistration, validateUserLogin } = require('../controllers/
 const prefix = '/api/v1/users';
 const router = new Router({ prefix: prefix });
 
-router.post('/register/', bodyParser(), validateUserRegistration, registerUser);
-router.post('/login/', bodyParser(), validateUserLogin, auth.requireLocal, loginUser);
+router.post('/', bodyParser(), validateUserRegistration, registerUser);
+router.post('/login', bodyParser(), validateUserLogin, auth.requireLocal, loginUser);
 router.del('/:id', auth.requireJWT, deleteUser);
 
 async function registerUser(ctx) {
@@ -28,7 +28,7 @@ async function registerUser(ctx) {
         if (result.affectedRows) {
             const id = result.insertId;
             ctx.status = 201;
-            ctx.body = { ID: id, created: true, link: `${ctx.request.path}/${id}` };
+            ctx.body = { message: `Account created for user ${body.username}` };
         }
 
     } catch (err) {
@@ -68,6 +68,8 @@ async function loginUser(ctx) {
     };
 }
 
+// TODO: check if the user is allow to delete the account
+// if the account is user's account || if the user's role is admin ? 
 async function deleteUser(ctx) {
     const userID = ctx.params.id;
     try {
