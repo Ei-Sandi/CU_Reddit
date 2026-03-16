@@ -28,4 +28,4 @@ const makeKoaValidator = (schema, resource) => {
 
 exports.validateUserRegistration = makeKoaValidator(userSchema.userRegistration, 'userRegistration');
 exports.validateUserLogin = makeKoaValidator(userSchema.userLogin, 'userLogin');
-exports.validatePostContents = makeKoaValidator(postSchema.postContents, 'postContents');
+exports.validatePostContent = makeKoaValidator(postSchema.postContent, 'postContent');

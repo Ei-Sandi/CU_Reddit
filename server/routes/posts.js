@@ -5,15 +5,15 @@ const model = require('../models/posts');
 
 const auth = require('../controllers/auth');
 
-const { validatePostContents } = require('../controllers/validation');
+const { validatePostContent } = require('../controllers/validation');
 
 const prefix = '/api/v1/posts';
 const router = new Router({ prefix: prefix });
 
 router.get('/', getAllPosts);
 router.get('/:user_id', getPostByUserID);
-router.post('/', bodyParser(), auth.requireJWT, validatePostContents, createNewPost);
-router.put('/:post_id', bodyParser(), auth.requireJWT, validatePostContents, editPost);
+router.post('/', bodyParser(), auth.requireJWT, validatePostContent, createNewPost);
+router.put('/:post_id', bodyParser(), auth.requireJWT, validatePostContent, editPost);
 router.del('/:post_id', auth.requireJWT, deletePost);
 
 async function getAllPosts(ctx) {
@@ -22,7 +22,7 @@ async function getAllPosts(ctx) {
 
 async function getPostByUserID(ctx) {
     const userID = ctx.params.user_id;
-    ctx.body = await model.getPostByUserID(userID); 
+    ctx.body = await model.getPostByUserID(userID);
 }
 
 async function createNewPost(ctx) {
@@ -34,11 +34,20 @@ async function createNewPost(ctx) {
         ctx.body = { error: "Content required to create post." };
         return;
     }
-    const result = await model.createNewPost(userID, body.content);
-    if (result.affectedRows) {
-        ctx.status = 201;
-        ctx.body = { message: `Post created for user ${userID}`};
+
+    try {
+        const result = await model.createNewPost(userID, body.content);
+        if (result.affectedRows) {
+            ctx.status = 201;
+            ctx.body = { message: `Post created for user ${userID}` };
+        }
+
+    } catch (err) {
+        console.error("Error occured while creating post.", err);
+        ctx.status = 500;
+        ctx.body = { error: "Internal Server Error." };
     }
+
 }
 
 // TODO: check if the user is allow to update the post
@@ -51,13 +60,19 @@ async function editPost(ctx) {
         ctx.body = { error: "Content required to update post." };
         return;
     }
+
     const postID = ctx.params.post_id;
-    const content = body.content;
-    
-    const result = await model.updatePost(postID, content);
-    if (result.affectedRows) {
-        ctx.status = 201;
-        ctx.body = { message: `Post with id ${postID} updated.`};
+    try {
+        const result = await model.updatePost(postID, body.content);
+        if (result.affectedRows) {
+            ctx.status = 201;
+            ctx.body = { message: `Post with id ${postID} updated.` };
+        }
+
+    } catch (err) {
+        console.error("Error occured while editing post.", err);
+        ctx.status = 500;
+        ctx.body = { error: "Internal Server Error." };
     }
 }
 
@@ -69,11 +84,12 @@ async function deletePost(ctx) {
         const result = await model.deletePost(postID);
         if (result.affectedRows) {
             ctx.status = 200;
-            ctx.body = { message: "Post deleted."};
+            ctx.body = { message: "Post deleted." };
         } else {
             ctx.status = 400;
-            ctx.body = { error: "Post not found."};
+            ctx.body = { error: "Post not found." };
         }
+
     } catch (err) {
         console.error("Error deleting post: ", err);
         ctx.status = 500;
