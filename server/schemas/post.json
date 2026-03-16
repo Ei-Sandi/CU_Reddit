@@ -1,6 +1,6 @@
 {
     "definitions": {
-        "postContents": {
+        "postContent": {
             "type": "object",
             "properties": {
                 "content": {
