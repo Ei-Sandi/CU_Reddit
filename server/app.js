@@ -2,11 +2,13 @@ const Koa = require('koa');
 const cors = require('@koa/cors');
 const db = require('./helpers/database');
 const users = require('./routes/users'); 
+const posts = require('./routes/posts');
 const { SERVER_PORT } = require('./config');
 
 const app = new Koa();
 app.use(cors());
 app.use(users.routes())
+app.use(posts.routes());
 
 db.initializeDB()
     .then(() => {

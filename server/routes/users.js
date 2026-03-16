@@ -1,6 +1,8 @@
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
+
 const model = require('../models/users');
+
 const auth = require('../controllers/auth');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRETKEY } = require('../config');

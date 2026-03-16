@@ -1,0 +1,16 @@
+{
+    "definitions": {
+        "postContents": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "content"
+            ],
+            "additionalProperties": false
+        }
+    }
+}

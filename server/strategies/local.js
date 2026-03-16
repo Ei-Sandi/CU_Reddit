@@ -20,6 +20,7 @@ const authenticateUser = async (email, password, done) => {
         return done(null, false);
     }
 
+    delete user.password;
     return done(null, user);
 }
 
