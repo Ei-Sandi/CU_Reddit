@@ -7,6 +7,7 @@ const users = require('./routes/users');
 const posts = require('./routes/posts');
 const comments = require('./routes/comments');
 const postLikes = require('./routes/post-likes');
+const commentLikes = require('./routes/comment_likes');
 
 const { SERVER_PORT } = require('./config');
 
@@ -17,6 +18,7 @@ app.use(users.routes())
 app.use(posts.routes());
 app.use(comments.routes());
 app.use(postLikes.routes());
+app.use(commentLikes.routes());
 
 db.initializeDB()
     .then(() => {
