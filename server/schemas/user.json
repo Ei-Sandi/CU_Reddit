@@ -45,6 +45,18 @@
                 "password"
             ],
             "additionalProperties": false
+        },
+        "usernameUpdate": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "username"
+            ],
+            "additionalProperties": false
         }
     }
 }

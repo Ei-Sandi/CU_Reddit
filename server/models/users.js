@@ -22,6 +22,12 @@ exports.getUserByID = async function getUserByID(userID) {
     return rows[0];
 }
 
+exports.updateUserName = async function updateUserName(userID, username) {
+    const query = "UPDATE users SET username = ? WHERE id = ?;";
+    const data = await db.run_query(query, [username, userID]);
+    return data;
+}
+
 exports.deleteUser = async function deleteUser(userID) {
     const query = "DELETE FROM users WHERE id = ?;";
     const data = await db.run_query(query, [userID]); 
