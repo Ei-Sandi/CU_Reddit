@@ -2,7 +2,9 @@ const Router = require('koa-router');
 
 const model = require('../models/post_likes');
 
-const auth = require('../controllers/auth')
+const auth = require('../controllers/auth');
+
+const can = require('../permissions/likes')
 
 const prefix = '/api/v1/post_likes';
 const router = new Router({ prefix: prefix });
@@ -41,6 +43,22 @@ async function createPostLike(ctx) {
 async function deletePostLike(ctx) {
     const postID = ctx.params.post_id;
     const userID = ctx.state.user.id;
+
+    const postLike = await model.getPostLike(postID, userID);
+    if (!postLike) {
+        ctx.status = 404;
+        ctx.body = { error: "Like not found." };
+        return; 
+    }
+
+    const permission = can.delete(ctx.state.user, postLike);
+
+    if (!permission.granted) {
+        ctx.status = 403; 
+        ctx.body = { error: "You do not own this post." };
+        return;
+    }
+
     try {
         const result = await model.deletePostLike(postID, userID);
         if (result.affectedRows) {

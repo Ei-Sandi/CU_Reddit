@@ -7,6 +7,8 @@ const auth = require('../controllers/auth');
 
 const { validatePostContent } = require('../controllers/validation');
 
+const can = require('../permissions/posts');
+
 const prefix = '/api/v1/posts';
 const router = new Router({ prefix: prefix });
 
@@ -50,8 +52,6 @@ async function createNewPost(ctx) {
 
 }
 
-// TODO: check if the user is allow to update the post
-// if the post is user's post || if the user's role is admin ? 
 async function editPost(ctx) {
     const body = ctx.request.body;
 
@@ -62,11 +62,29 @@ async function editPost(ctx) {
     }
 
     const postID = ctx.params.post_id;
+    const post = await model.getPostByPostID(postID);
+
+    if (!post) {
+        ctx.status = 404;
+        ctx.body = { error: "Post not found." };
+        return; 
+    }
+    
+    const permission = can.update(ctx.state.user, post);
+
+    if (!permission.granted) {
+        ctx.status = 403; 
+        ctx.body = { error: "You do not own this post." };
+        return;
+    }
     try {
         const result = await model.updatePost(postID, body.content);
         if (result.affectedRows) {
-            ctx.status = 201;
+            ctx.status = 200;
             ctx.body = { message: `Post with id ${postID} updated.` };
+        } else {
+            ctx.status = 400;
+            ctx.body = { error: "Post could not be updated." };
         }
 
     } catch (err) {
@@ -76,10 +94,24 @@ async function editPost(ctx) {
     }
 }
 
-// TODO: check if the user is allow to delete the post
-// if the post is user's post || if the user's role is admin ? 
 async function deletePost(ctx) {
     const postID = ctx.params.post_id;
+
+    const post = await model.getPostByPostID(postID);
+    if (!post) {
+        ctx.status = 404;
+        ctx.body = { error: "Post not found." };
+        return; 
+    }
+
+    const permission = can.delete(ctx.state.user, post);
+
+    if (!permission.granted) {
+        ctx.status = 403; 
+        ctx.body = { error: "You do not own this post." };
+        return;
+    }
+
     try {
         const result = await model.deletePost(postID);
         if (result.affectedRows) {

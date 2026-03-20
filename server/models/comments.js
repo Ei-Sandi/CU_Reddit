@@ -1,6 +1,6 @@
 const db = require('../helpers/database');
 
-exports.getAllComments = async function getAllComments(postID) {
+exports.getAllCommentsOfAPost = async function getAllCommentsOfAPost(postID) {
     const query = "SELECT * FROM comments WHERE post_id = ?;";
     const data = await db.run_query(query, [postID]);
     return data;
@@ -12,6 +12,12 @@ exports.createNewComment = async function createNewComment(userID, postID, conte
     return data;
 }
 
+exports.getCommentByCommentID = async function getCommentByCommentID(commentID) {
+    const query = "SELECT * FROM comments WHERE id = ?;";
+    const data = await db.run_query(query, [commentID]);
+    return data[0];
+}
+
 exports.updateComment = async function updateComment(commentID, newContent) {
     const query = "UPDATE comments SET content = ? WHERE id = ?;";
     const data = await db.run_query(query, [newContent, commentID]);
@@ -20,6 +26,6 @@ exports.updateComment = async function updateComment(commentID, newContent) {
 
 exports.deleteComment = async function deleteComment(commentID) {
     const query = "DELETE FROM comments WHERE id = ?;";
-    const data = await db.run_query(query, commentID);
+    const data = await db.run_query(query, [commentID]);
     return data;
 }

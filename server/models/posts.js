@@ -12,6 +12,12 @@ exports.getPostByUserID = async function getPostByUserID(userID) {
     return data;
 }
 
+exports.getPostByPostID = async function getPostByPostID(postID) {
+    const query = "SELECT * FROM posts WHERE id = ?;";
+    const data = await db.run_query(query, [postID]);
+    return data[0];
+}
+
 exports.createNewPost = async function createNewPost(userID, content) {
     const query = "INSERT INTO posts (user_id, content) VALUES (?, ?);";
     const data = await db.run_query(query, [userID, content]);
