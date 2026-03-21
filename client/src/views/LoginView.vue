@@ -1,6 +1,6 @@
 <template>
   <div style="max-width: 400px; margin: 50px auto;">
-    <a-card style="border: solid" title="Login">
+    <a-card style="border: solid 1px" title="Login">
       <a-form :model="formState" @finish="onFinish">
 
         <a-form-item label="Email" name="email" :rules="[{ required: true }]">
