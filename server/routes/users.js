@@ -60,7 +60,6 @@ async function loginUser(ctx) {
     const payload = {
         ID: user.id,
         username: user.username,
-        email: user.email,
         role: user.role
     };
 
@@ -69,7 +68,9 @@ async function loginUser(ctx) {
     ctx.status = 200;
     ctx.body = {
         message: "Login successful",
-        token: token,
+        access_token: token,
+        token_type: "Bearer",
+        expires_in: 3600,
         user: payload
     };
 }

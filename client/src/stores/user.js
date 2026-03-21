@@ -2,40 +2,50 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
-    const user = ref({ 
-        loggedIn: false, 
+    const token = ref('')
+
+    const user = ref({
+        loggedIn: false,
         ID: 0,
-        username: '', 
+        username: '',
         email: '',
-        role: '' 
+        role: ''
     })
 
     const storedUser = localStorage.getItem('user')
-    if (storedUser) {
+    const storedToken = localStorage.getItem('access_token');
+
+    if (storedUser && storedToken) {
         user.value = JSON.parse(storedUser)
+        token.value = storedToken
     }
 
-    function login(userData) {
+    function login(apiResponse) {
+        token.value = apiResponse.access_token
+        localStorage.setItem('access_token', token.value)
+
         user.value = {
             loggedIn: true,
-            ID: userData.ID,
-            username: userData.username,
-            email: userData.email,
-            role: userData.role
+            ID: apiResponse.user.ID,
+            username: apiResponse.user.username,
+            role: apiResponse.user.role
         }
         localStorage.setItem('user', JSON.stringify(user.value))
     }
 
     function logout() {
-        user.value = { 
+        token.value = ''
+        localStorage.removeItem('access_token')
+
+        user.value = {
             loggedIn: false,
-            ID: 0, 
-            username: '', 
+            ID: 0,
+            username: '',
             email: '',
-            role: '' 
+            role: ''
         }
         localStorage.removeItem('user')
     }
 
-    return { user, login, logout }
+    return { user, token, login, logout }
 })

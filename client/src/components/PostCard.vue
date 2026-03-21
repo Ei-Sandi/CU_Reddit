@@ -13,7 +13,7 @@ defineProps({
     <!-- <template #cover>
       <img :alt="title" :src="imageURL || 'https://picsum.photos/300/200'" />
     </template> -->
-    
+
     <a-card-meta :title="username">
       <template #description>
         {{ content }}
