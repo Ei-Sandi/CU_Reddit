@@ -7,7 +7,7 @@ const auth = require('../controllers/auth');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRETKEY } = require('../config');
 
-const { validateUserRegistration, validateUserLogin, validateUsernameUpdate } = require('../controllers/validation');
+const { validateUserRegistration, validateUsernameUpdate } = require('../controllers/validation');
 
 const can = require('../permissions/users');
 
@@ -15,7 +15,7 @@ const prefix = '/api/v1/users';
 const router = new Router({ prefix: prefix });
 
 router.post('/', bodyParser(), validateUserRegistration, registerUser);
-router.post('/login', bodyParser(), validateUserLogin, auth.requireLocal, loginUser);
+router.post('/login', auth.requireBasic, loginUser);
 router.put('/', bodyParser(), auth.requireJWT, validateUsernameUpdate, changeUserName);
 router.del('/:id', auth.requireJWT, deleteUser);
 

@@ -1,11 +1,11 @@
 const passport = require('koa-passport');
-const localAuth = require('../strategies/local');
+const basicAuth = require('../strategies/basic');
 const jwtAuth = require('../strategies/jwt');
 
-passport.use(localAuth);
+passport.use(basicAuth);
 passport.use(jwtAuth);
 
 module.exports = {
-    requireLocal: passport.authenticate(['local'], { session: false }),
+    requireBasic: passport.authenticate(['basic'], { session: false }),
     requireJWT: passport.authenticate(['jwt'], { session: false })
 };
