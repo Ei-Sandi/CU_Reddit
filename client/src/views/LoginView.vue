@@ -1,10 +1,10 @@
 <template>
   <div style="max-width: 400px; margin: 50px auto;">
-    <a-card title="Login">
+    <a-card style="border: solid" title="Login">
       <a-form :model="formState" @finish="onFinish">
-        
-        <a-form-item label="Username" name="username" :rules="[{ required: true }]">
-          <a-input v-model:value="formState.username" />
+
+        <a-form-item label="Email" name="email" :rules="[{ required: true }]">
+          <a-input v-model:value="formState.email" />
         </a-form-item>
 
         <a-form-item label="Password" name="password" :rules="[{ required: true }]">
@@ -23,22 +23,22 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/user'; // Import our Store
+import { useUserStore } from '@/stores/user';
+import { config } from '../config';
 
 const router = useRouter();
-const userStore = useUserStore(); // Initialize the store
+const userStore = useUserStore();
 const loading = ref(false);
 
-const formState = reactive({ username: '', password: '' });
+const formState = reactive({ email: '', password: '' });
 
 const onFinish = async (values) => {
   loading.value = true;
-  
-  // 1. Create the Basic Auth String
-  const authString = btoa(`${values.username}:${values.password}`);
-  
+
+  const authString = btoa(`${values.email}:${values.password}`);
+
   try {
-    const response = await fetch('http://localhost:3000/api/v1/users/login', {
+    const response = await fetch(`${config.SERVER_URL}/users/login`, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${authString}`
@@ -46,16 +46,16 @@ const onFinish = async (values) => {
     });
 
     if (response.ok) {
-        const data = await response.json();
-        
-        // 2. SAVE TO PINIA (The Global Brain)
-        userStore.login(data);
-        
-        alert('Welcome back ' + data.username);
-        router.push('/');
+      const data = await response.json();
+
+      userStore.login(data);
+
+      alert('Welcome back ' + userStore.user.username);
+      router.push('/');
     } else {
-        alert('Login failed');
+      alert('Login failed');
     }
+
   } catch (error) {
     console.error(error);
   } finally {
@@ -63,4 +63,3 @@ const onFinish = async (values) => {
   }
 };
 </script>
-
