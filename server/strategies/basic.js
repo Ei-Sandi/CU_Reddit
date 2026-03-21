@@ -1,4 +1,4 @@
-const LocalStrategy = require('passport-local').Strategy;
+const { BasicStrategy } = require('passport-http');
 const model = require('../models/users');
 const bcrypt = require('bcrypt');
 
@@ -24,7 +24,5 @@ const authenticateUser = async (email, password, done) => {
     return done(null, user);
 }
 
-// LocalStrategy by default uses username, overriding to use email here.
-const options = { usernameField: 'email' };
-const strategy = new LocalStrategy(options, authenticateUser);
+const strategy = new BasicStrategy(authenticateUser);
 module.exports = strategy;
