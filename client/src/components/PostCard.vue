@@ -1,24 +1,22 @@
 <script setup>
-import { Card } from 'ant-design-vue';
 
-// Define what data this component EXPECTS to receive
 defineProps({
-  title: String,
-  summary: String,
-  imageURL: String // In JS, props are optional by default unless you specify { required: true }
+  username: String,
+  content: String
+  //imageURL: String 
 })
 
 </script>
 
 <template>
   <a-card hoverable style="width: 300px">
-    <template #cover>
+    <!-- <template #cover>
       <img :alt="title" :src="imageURL || 'https://picsum.photos/300/200'" />
-    </template>
+    </template> -->
     
-    <a-card-meta :title="title">
+    <a-card-meta :title="username">
       <template #description>
-        {{ summary }}
+        {{ content }}
       </template>
     </a-card-meta>
   </a-card>

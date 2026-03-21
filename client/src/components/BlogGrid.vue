@@ -1,18 +1,15 @@
-
 <script setup>
 import { ref, onMounted } from 'vue'
-import PostCard from './PostCard.vue' // Import our new child component
+import PostCard from './PostCard.vue'
 
-const articles = ref([])
+const posts = ref([])
 const loading = ref(true)
 
 onMounted(async () => {
   try {
-    // Make sure your Week 2 Backend is running on port
-    // 3000!
-    const res = await fetch('http://localhost:3000/api/v1/articles')
+    const res = await fetch('http://localhost:3000/api/v1/posts')
     const data = await res.json()
-    articles.value = data
+    posts.value = data
   } catch (e) {
     console.error(e)
   } finally {
@@ -26,11 +23,10 @@ onMounted(async () => {
   
   <a-row :gutter="[16, 16]" v-else>
     
-    <a-col :span="8" v-for="article in articles" :key="article.ID">
+    <a-col :span="8" v-for="post in posts" :key="post.post_id">
       <PostCard 
-        :title="article.title" 
-        :summary="article.summary" 
-        :imageURL="article.imageURL"
+        :username="post.username"
+        :content="post.content" 
       />
     </a-col>
     
