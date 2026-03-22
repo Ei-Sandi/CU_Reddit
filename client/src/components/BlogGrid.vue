@@ -2,13 +2,19 @@
 import { ref, onMounted } from 'vue'
 import PostCard from './PostCard.vue'
 import { config } from '../config.js'
+import { useUserStore } from '../stores/user.js'
 
 const posts = ref([])
 const loading = ref(true)
+const userStore = useUserStore()
 
 onMounted(async () => {
   try {
-    const res = await fetch(`${config.SERVER_URL}/posts`)
+    const res = await fetch(`${config.SERVER_URL}/posts`, {
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    })
     const data = await res.json()
     posts.value = data
   } catch (e) {

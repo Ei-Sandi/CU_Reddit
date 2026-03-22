@@ -47,11 +47,12 @@ const onFinish = async (values) => {
 
     if (response.ok) {
       const data = await response.json();
-
       userStore.login(data);
-
       alert('Welcome back ' + userStore.user.username);
-      router.push('/');
+
+      const redirectPath = router.currentRoute.value.query.redirect || '/';
+      router.push(redirectPath);
+    
     } else {
       alert('Login failed');
     }
