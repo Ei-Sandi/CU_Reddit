@@ -8,14 +8,12 @@ const userStore = useUserStore()
 <template>
   <a-layout class="layout">
     <a-layout-header>
-      <div class="logo">CU Reddit</div>
-
       <a-menu class="nav-menu" theme="dark" mode="horizontal" :selectable="false">
         <a-menu-item key="1">
-          <RouterLink class="nav-link" to="/">Home</RouterLink>
+            <RouterLink class="nav-link" to="/">CU Reddit</RouterLink>
         </a-menu-item>
 
-        <a-menu-item key="2" v-if="!userStore.user.loggedIn">
+        <a-menu-item key="2" v-if="!userStore.user.loggedIn" style="margin-left: auto;">
           <RouterLink class="nav-link" to="/login">Login</RouterLink>
         </a-menu-item>
 
@@ -23,8 +21,8 @@ const userStore = useUserStore()
           <RouterLink class="nav-link" to="/register">Register</RouterLink>
         </a-menu-item>
 
-        <a-menu-item key="4" v-else>
-          Hello, {{ userStore.user.username }}
+        <a-menu-item key="4" v-if="userStore.user.loggedIn" style="margin-left: auto;">
+          <RouterLink class="nav-link" to="/profile">My Profile</RouterLink>
         </a-menu-item>
 
         <a-menu-item key="5" v-if="userStore.user.loggedIn" @click="userStore.logout">
@@ -47,12 +45,6 @@ const userStore = useUserStore()
 body {
   margin: 0;
   padding: 0;
-}
-
-.logo {
-  color: #ffffff;
-  float: left;
-  margin-right: 20px;
 }
 
 .nav-menu {
