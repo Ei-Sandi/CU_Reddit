@@ -12,8 +12,8 @@ const can = require('../permissions/posts');
 const prefix = '/api/v1/posts';
 const router = new Router({ prefix: prefix });
 
-router.get('/', getAllPosts);
-router.get('/:user_id', getPostByUserID);
+router.get('/', auth.requireJWT, getAllPosts);
+router.get('/:user_id', auth.requireJWT, getPostByUserID);
 router.post('/', bodyParser(), auth.requireJWT, validatePostContent, createNewPost);
 router.put('/:post_id', bodyParser(), auth.requireJWT, validatePostContent, editPost);
 router.del('/:post_id', auth.requireJWT, deletePost);

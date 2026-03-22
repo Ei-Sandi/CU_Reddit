@@ -9,7 +9,7 @@ const can = require('../permissions/likes')
 const prefix = '/api/v1/post_likes';
 const router = new Router({ prefix: prefix });
 
-router.get('/:post_id', getPostLikes);
+router.get('/:post_id', auth.requireJWT, getPostLikes);
 router.post('/:post_id', auth.requireJWT, createPostLike);
 router.del('/:post_id', auth.requireJWT, deletePostLike);
 

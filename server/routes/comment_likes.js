@@ -7,7 +7,7 @@ const auth = require('../controllers/auth')
 const prefix = '/api/v1/comment_likes';
 const router = new Router({ prefix: prefix });
 
-router.get('/:comment_id', getCommentLikes);
+router.get('/:comment_id', auth.requireJWT, getCommentLikes);
 router.post('/:comment_id', auth.requireJWT, createCommentLike);
 router.del('/:comment_id', auth.requireJWT, deleteCommentLike);
 
