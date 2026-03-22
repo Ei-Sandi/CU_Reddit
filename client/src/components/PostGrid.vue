@@ -31,7 +31,7 @@ onMounted(async () => {
   <a-row :gutter="[16, 16]" v-else>
 
     <a-col :span="8" v-for="post in posts" :key="post.post_id">
-      <PostCard :username="post.username" :content="post.content" />
+      <PostCard :username="post.username" :content="post.content" :created_at="post.created_at" />
     </a-col>
 
   </a-row>

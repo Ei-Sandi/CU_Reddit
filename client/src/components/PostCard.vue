@@ -2,7 +2,8 @@
 
 defineProps({
   username: String,
-  content: String
+  content: String,
+  created_at: String
   //imageURL: String 
 })
 
@@ -16,7 +17,8 @@ defineProps({
 
     <a-card-meta :title="username">
       <template #description>
-        {{ content }}
+        <p>{{ content }}</p>
+        <small style="color: gray;">Posted: {{ new Date(created_at).toLocaleString() }}</small>
       </template>
     </a-card-meta>
   </a-card>

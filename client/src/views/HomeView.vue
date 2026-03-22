@@ -1,6 +1,6 @@
 <script setup>
 import WelcomePage from '@/components/WelcomePage.vue';
-import BlogGrid from '../components/BlogGrid.vue'
+import PostGrid from '../components/PostGrid.vue'
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
@@ -19,7 +19,7 @@ const userStore = useUserStore();
     </div>
 
     <h3 class="section-title">Latest Posts</h3>
-    <BlogGrid />
+    <PostGrid />
   </div>
 
   <div v-else>  
