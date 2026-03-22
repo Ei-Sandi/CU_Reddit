@@ -8,19 +8,19 @@ const userStore = useUserStore()
 <template>
   <a-layout class="layout">
     <a-layout-header>
-      <div style="color: #ffffff;" class="logo">CU Reddit</div>
+      <div class="logo">CU Reddit</div>
 
-      <a-menu style="color: #ffffff;" theme="dark" mode="horizontal" :selectable="false">
+      <a-menu class="nav-menu" theme="dark" mode="horizontal" :selectable="false">
         <a-menu-item key="1">
-          <RouterLink to="/">Home</RouterLink>
+          <RouterLink class="nav-link" to="/">Home</RouterLink>
         </a-menu-item>
 
         <a-menu-item key="2" v-if="!userStore.user.loggedIn">
-          <RouterLink to="/login">Login</RouterLink>
+          <RouterLink class="nav-link" to="/login">Login</RouterLink>
         </a-menu-item>
 
         <a-menu-item key="3" v-if="!userStore.user.loggedIn">
-          <RouterLink to="/register">Register</RouterLink>
+          <RouterLink class="nav-link" to="/register">Register</RouterLink>
         </a-menu-item>
 
         <a-menu-item key="4" v-else>
@@ -28,13 +28,13 @@ const userStore = useUserStore()
         </a-menu-item>
 
         <a-menu-item key="5" v-if="userStore.user.loggedIn" @click="userStore.logout">
-          Logout
+          <span class="nav-link">Logout</span>
         </a-menu-item>
 
       </a-menu>
     </a-layout-header>
 
-    <a-layout-content style="padding: 0 50px; margin-top: 20px">
+    <a-layout-content class="main-content">
       <div class="site-layout-content">
         <RouterView />
       </div>
@@ -42,3 +42,38 @@ const userStore = useUserStore()
 
   </a-layout>
 </template>
+
+<style>
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.logo {
+  color: #ffffff;
+  float: left;
+  margin-right: 20px;
+}
+
+.nav-menu {
+  color: #ffffff;
+}
+
+.main-content {
+  padding: 0 50px;
+  margin-top: 20px;
+}
+
+.nav-link {
+  display: inline-block;
+  transition: transform 0.1s ease;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.nav-link:active {
+  transform: scale(0.95);
+}
+</style>

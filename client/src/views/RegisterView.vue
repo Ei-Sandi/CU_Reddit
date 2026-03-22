@@ -1,27 +1,27 @@
 <template>
-  <div style="max-width: 400px; margin: 50px auto;">
-    <a-card style="border: solid 1px" title="Register">
-      <a-form :model="formState" @finish="onFinish">
+  <div class="auth-container">
+    <a-card class="auth-card" :headStyle="{ textAlign: 'center' }" title="Register">
+      <a-form :model="formState" @finish="onFinish" layout="vertical">
 
         <a-form-item label="Username" name="username"
           :rules="[{ required: true, message: 'Please input your username!' }]">
-          <a-input v-model:value="formState.username" />
+          <a-input v-model:value="formState.username" class="auth-input" />
         </a-form-item>
 
         <a-form-item label="Email" name="email" :rules="[{ required: true, type: 'email' }]">
-          <a-input v-model:value="formState.email" />
+          <a-input v-model:value="formState.email" class="auth-input" />
         </a-form-item>
 
         <a-form-item label="Password" name="password" :rules="[{ required: true }]">
-          <a-input-password v-model:value="formState.password" />
+          <a-input-password v-model:value="formState.password" class="auth-input" />
         </a-form-item>
 
         <a-form-item label="Retype Password" name="retypePassword" :rules="[{ required: true }]">
-          <a-input-password v-model:value="formState.retypePassword" />
+          <a-input-password v-model:value="formState.retypePassword" class="auth-input" />
         </a-form-item>
 
-        <a-form-item>
-          <a-button type="primary" html-type="submit" :loading="loading">Sign Up</a-button>
+        <a-form-item class="submit-container">
+          <a-button class="action-btn" type="primary" html-type="submit" :loading="loading">Sign Up</a-button>
         </a-form-item>
 
       </a-form>
@@ -66,3 +66,44 @@ const onFinish = async (values) => {
   }
 };
 </script>
+
+<style scoped>
+.auth-container {
+  max-width: 400px;
+  margin: 100px auto;
+}
+
+.auth-card {
+  border: 1px solid #888;
+}
+
+.auth-input,
+.auth-input:hover,
+.auth-input:focus,
+.auth-input:focus-within {
+  border: 1px solid #888 !important;
+  box-shadow: none !important;
+}
+
+.submit-container {
+  text-align: center;
+}
+
+.action-btn {
+  background-color: #001529 !important;
+  border-color: #001529 !important;
+  color: #ffffff !important;
+  transition: transform 0.1s ease;
+}
+
+.action-btn:hover,
+.action-btn:focus {
+  background-color: #001529 !important;
+  border-color: #001529 !important;
+  color: #ffffff !important;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+</style>
