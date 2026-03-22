@@ -12,7 +12,7 @@ const can = require('../permissions/comments')
 const prefix = '/api/v1/comments';
 const router = new Router({ prefix: prefix });
 
-router.get('/:post_id', getAllCommentsOfAPost);
+router.get('/:post_id', auth.requireJWT, getAllCommentsOfAPost);
 router.post('/:post_id', bodyParser(), auth.requireJWT, validateCommentContent, createNewComment);
 router.put('/:comment_id', bodyParser(), auth.requireJWT, validateCommentContent, editComment);
 router.del('/:comment_id', auth.requireJWT, deleteComment);
