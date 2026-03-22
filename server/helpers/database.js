@@ -24,6 +24,7 @@ exports.initializeDB = async function initializeDB() {
                 email VARCHAR(100) NOT NULL,
                 password VARCHAR(100) NOT NULL,
                 role ENUM('member', 'admin') NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (id)
             )
         `;
@@ -34,6 +35,7 @@ exports.initializeDB = async function initializeDB() {
                 id INT NOT NULL AUTO_INCREMENT,
                 user_id INT NOT NULL,
                 content TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (id),
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )
@@ -46,6 +48,7 @@ exports.initializeDB = async function initializeDB() {
                 post_id INT NOT NULL,
                 user_id INT NOT NULL,
                 content TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (id),
                 FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
