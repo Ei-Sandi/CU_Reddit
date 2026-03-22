@@ -11,7 +11,12 @@ exports.getAllPosts = async function getAllPosts() {
 }
 
 exports.getPostByUserID = async function getPostByUserID(userID) {
-    const query = "SELECT * FROM posts WHERE user_id = ?;";
+    const query = `
+        SELECT users.username, posts.id AS post_id, posts.content, posts.created_at
+        FROM posts
+        JOIN users ON posts.user_id = users.id
+        WHERE posts.user_id = ?;
+    `;
     const data = await db.run_query(query, [userID]);
     return data;
 }

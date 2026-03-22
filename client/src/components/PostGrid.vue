@@ -8,15 +8,25 @@ const posts = ref([])
 const loading = ref(true)
 const userStore = useUserStore()
 
+const props = defineProps({
+  user_id: [String, Number]
+})
+
 onMounted(async () => {
   try {
-    const res = await fetch(`${config.SERVER_URL}/posts`, {
+    const url = props.user_id 
+      ? `${config.SERVER_URL}/posts/${props.user_id}`
+      : `${config.SERVER_URL}/posts`;
+
+    const res = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${userStore.token}`
       }
     })
+
     const data = await res.json()
     posts.value = data
+
   } catch (e) {
     console.error(e)
   } finally {
