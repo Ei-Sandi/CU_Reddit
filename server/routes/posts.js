@@ -1,5 +1,4 @@
 const Router = require('koa-router');
-const bodyParser = require('koa-bodyparser');
 
 const model = require('../models/posts');
 
@@ -14,8 +13,8 @@ const router = new Router({ prefix: prefix });
 
 router.get('/', auth.requireJWT, getAllPosts);
 router.get('/:user_id', auth.requireJWT, getPostByUserID);
-router.post('/', bodyParser(), auth.requireJWT, validatePostContent, createNewPost);
-router.put('/:post_id', bodyParser(), auth.requireJWT, validatePostContent, editPost);
+router.post('/', auth.requireJWT, validatePostContent, createNewPost);
+router.put('/:post_id', auth.requireJWT, validatePostContent, editPost);
 router.del('/:post_id', auth.requireJWT, deletePost);
 
 async function getAllPosts(ctx) {
@@ -35,10 +34,11 @@ async function createNewPost(ctx) {
         ctx.status = 400;
         ctx.body = { error: "Content required to create post." };
         return;
-    }
+    } 
 
     try {
-        const result = await model.createNewPost(userID, body.content);
+        const imageURL = body.imageURL || null;
+        const result = await model.createNewPost(userID, body.content, imageURL);
         if (result.affectedRows) {
             ctx.status = 201;
             ctx.body = { message: `Post created for user ${userID}` };

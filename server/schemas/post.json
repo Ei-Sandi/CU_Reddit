@@ -5,6 +5,9 @@
             "properties": {
                 "content": {
                     "type": "string"
+                },
+                "imageURL": {
+                    "type": ["string", "null"]
                 }
             },
             "required": [

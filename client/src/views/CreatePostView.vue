@@ -3,8 +3,16 @@
     <a-card class="post-card" :headStyle="{ textAlign: 'center' }" title="New Post">
       <a-form :model="formState" @finish="onFinish" layout="vertical">
 
+        <a-form-item label="Image">
+          <input type="file" @change="handleFileUpload" accept="image/*" />
+          <div v-if="formState.imageURL" style="margin-top: 10px;">
+            <p style="color: green;">Image uploaded successfully!</p>
+            <img :src="formState.imageURL" style="max-height: 100px;" />
+          </div>
+        </a-form-item>
+
         <a-form-item label="Content" name="content" :rules="[{ required: true }]">
-            <a-textarea class="post-input" v-model:value="formState.content" :rows="4" />
+          <a-textarea class="post-input" v-model:value="formState.content" :rows="4" />
         </a-form-item>
 
         <a-form-item class="submit-container">
@@ -26,19 +34,52 @@ const router = useRouter();
 const userStore = useUserStore();
 const loading = ref(false);
 
-const formState = reactive({ content: '' });
+const formState = reactive({
+  imageURL: '',
+  content: ''
+});
 
-const onFinish = async (values) => {
+const handleFileUpload = async (event) => {
+  const target = event.target;
+  if (!target.files || target.files.length === 0) return;
+  const file = target.files[0];
+  const formData = new FormData();
+  formData.append('upload', file);
+  try {
+    const res = await fetch('http://localhost:3000/api/v1/images', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      },
+      body: formData
+    });
+    if (res.ok) {
+      const data = await res.json();
+      formState.imageURL = data.links.path;
+    } else {
+      alert("Image upload failed");
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+const onFinish = async () => {
   loading.value = true;
 
   try {
+    const payload = {
+      content: formState.content,
+      imageURL: formState.imageURL || null
+    };
+
     const response = await fetch(`${config.SERVER_URL}/posts`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(values)
+      body: JSON.stringify(payload)
     });
 
     if (response.ok) {

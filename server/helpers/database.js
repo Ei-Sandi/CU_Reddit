@@ -35,6 +35,7 @@ exports.initializeDB = async function initializeDB() {
                 id INT NOT NULL AUTO_INCREMENT,
                 user_id INT NOT NULL,
                 content TEXT NOT NULL,
+                image_url TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (id),
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
