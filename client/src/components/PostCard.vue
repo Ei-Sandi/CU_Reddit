@@ -3,17 +3,17 @@
 defineProps({
   username: String,
   content: String,
-  created_at: String
-  //imageURL: String 
+  created_at: String,
+  imageURL: String 
 })
 
 </script>
 
 <template>
   <a-card hoverable style="width: 300px">
-    <!-- <template #cover>
+    <template #cover>
       <img :alt="title" :src="imageURL || 'https://picsum.photos/300/200'" />
-    </template> -->
+    </template>
 
     <a-card-meta :title="username">
       <template #description>

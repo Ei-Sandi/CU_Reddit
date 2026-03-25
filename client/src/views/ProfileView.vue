@@ -1,5 +1,4 @@
 <script setup>
-import WelcomePage from '@/components/WelcomePage.vue';
 import PostGrid from '../components/PostGrid.vue'
 import { useUserStore } from '@/stores/user';
 

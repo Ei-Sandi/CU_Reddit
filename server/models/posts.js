@@ -2,7 +2,7 @@ const db = require('../helpers/database');
 
 exports.getAllPosts = async function getAllPosts() {
     const query = `
-        SELECT users.username, posts.id AS post_id, posts.content, posts.created_at
+        SELECT users.username, posts.id AS post_id, posts.content, posts.image_url, posts.created_at
         FROM posts
         JOIN users ON posts.user_id = users.id;
     `;
@@ -12,7 +12,7 @@ exports.getAllPosts = async function getAllPosts() {
 
 exports.getPostByUserID = async function getPostByUserID(userID) {
     const query = `
-        SELECT users.username, posts.id AS post_id, posts.content, posts.created_at
+        SELECT users.username, posts.id AS post_id, posts.content, posts.image_url, posts.created_at
         FROM posts
         JOIN users ON posts.user_id = users.id
         WHERE posts.user_id = ?;
@@ -27,9 +27,9 @@ exports.getPostByPostID = async function getPostByPostID(postID) {
     return data[0];
 }
 
-exports.createNewPost = async function createNewPost(userID, content) {
-    const query = "INSERT INTO posts (user_id, content) VALUES (?, ?);";
-    const data = await db.run_query(query, [userID, content]);
+exports.createNewPost = async function createNewPost(userID, content, imageURL) {
+    const query = "INSERT INTO posts (user_id, content, image_url) VALUES (?, ?, ?);";
+    const data = await db.run_query(query, [userID, content, imageURL]);
     return data;
 }
 
