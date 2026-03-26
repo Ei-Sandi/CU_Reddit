@@ -1,13 +1,17 @@
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 
-const model = require('../models/users');
+const userModel = require('../models/users');
+const postModel = require('../models/posts');
 
 const auth = require('../controllers/auth');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRETKEY } = require('../config');
 
 const { validateUserRegistration, validateUsernameUpdate } = require('../controllers/validation');
+
+const fs = require('fs/promises');
+const path = require('path');
 
 const can = require('../permissions/users');
 
@@ -29,7 +33,7 @@ async function registerUser(ctx) {
     }
 
     try {
-        const result = await model.createNewUser(body);
+        const result = await userModel.createNewUser(body);
         if (result.affectedRows) {
             const id = result.insertId;
             ctx.status = 201;
@@ -85,7 +89,7 @@ async function changeUserName(ctx) {
     }
 
     const userID = ctx.state.user.id;
-    const user = await model.getUserByID(userID);
+    const user = await userModel.getUserByID(userID);
 
     if (!user) {
         //This should never happen since we are getting user from ctx.state.id
@@ -102,7 +106,7 @@ async function changeUserName(ctx) {
         return;
     }
     try {
-        const result = await model.updateUserName(userID, body.username);
+        const result = await userModel.updateUserName(userID, body.username);
         if (result.affectedRows) {
             ctx.status = 200;
             ctx.body = { message: `Username for id ${userID} is changed.` };
@@ -121,7 +125,7 @@ async function changeUserName(ctx) {
 async function deleteUser(ctx) {
     const userID = ctx.params.id;
 
-    const user = await model.getUserByID(userID);
+    const user = await userModel.getUserByID(userID);
     if (!user) {
         ctx.status = 404;
         ctx.body = { error: "User not found." };
@@ -137,7 +141,21 @@ async function deleteUser(ctx) {
     }
 
     try {
-        const result = await model.deleteUser(userID);
+        const posts = await postModel.getAllImageURLsByUserID(userID);
+
+        for (const post of posts) {
+            if (post.image_url) {
+                try {
+                    const filename = post.image_url.split('/').pop();
+                    const imagePath = path.join(process.cwd(), 'uploads', filename);
+                    await fs.unlink(imagePath);
+                } catch (fsErr) {
+                    console.error(`Failed to delete image ${post.image_url} during user deletion:`, fsErr);
+                }
+            }
+        }
+
+        const result = await userModel.deleteUser(userID);
         if (result.affectedRows) {
             ctx.status = 200;
             ctx.body = { message: "User Account Deleted." };
