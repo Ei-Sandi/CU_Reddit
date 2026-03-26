@@ -33,6 +33,17 @@ exports.createNewPost = async function createNewPost(userID, content, imageURL) 
     return data;
 }
 
+exports.getAllImageURLsByUserID = async function getAllImagesByUserID(userID) {
+    const query = `
+        SELECT posts.image_url
+        FROM posts
+        JOIN users ON posts.user_id = users.id
+        WHERE posts.user_id = ?;
+    `;
+    const data = await db.run_query(query, [userID]);
+    return data;
+}
+
 exports.updatePost = async function updatePost(postID, newContent) {
     const query = "UPDATE posts SET content = ? WHERE id = ?;";
     const data = await db.run_query(query, [newContent, postID]);
