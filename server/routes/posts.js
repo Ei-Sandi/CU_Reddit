@@ -7,6 +7,8 @@ const auth = require('../controllers/auth');
 const { validatePostContent } = require('../controllers/validation');
 
 const can = require('../permissions/posts');
+const fs = require('fs/promises');
+const path = require('path');
 
 const prefix = '/api/v1/posts';
 const router = new Router({ prefix: prefix });
@@ -113,6 +115,16 @@ async function deletePost(ctx) {
     }
 
     try {
+        if (post.image_url) {
+            try {
+                const filename = post.image_url.split('/').pop();
+                const imagePath = path.join(process.cwd(), 'uploads', filename);
+                await fs.unlink(imagePath);
+            } catch (fsErr) {
+                console.error("Failed to delete physical image file:", fsErr);
+            }
+        }
+
         const result = await model.deletePost(postID);
         if (result.affectedRows) {
             ctx.status = 200;
