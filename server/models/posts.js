@@ -2,7 +2,7 @@ const db = require('../helpers/database');
 
 exports.getAllPosts = async function getAllPosts() {
     const query = `
-        SELECT users.username, posts.id AS post_id, posts.content, posts.image_url, posts.created_at
+        SELECT users.username, posts.user_id, posts.id AS post_id, posts.content, posts.image_url, posts.created_at
         FROM posts
         JOIN users ON posts.user_id = users.id;
     `;
@@ -12,7 +12,7 @@ exports.getAllPosts = async function getAllPosts() {
 
 exports.getPostByUserID = async function getPostByUserID(userID) {
     const query = `
-        SELECT users.username, posts.id AS post_id, posts.content, posts.image_url, posts.created_at
+        SELECT users.username, posts.user_id, posts.id AS post_id, posts.content, posts.image_url, posts.created_at
         FROM posts
         JOIN users ON posts.user_id = users.id
         WHERE posts.user_id = ?;
