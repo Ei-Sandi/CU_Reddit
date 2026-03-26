@@ -38,10 +38,11 @@ onMounted(async () => {
 <template>
   <div v-if="loading">Loading...</div>
 
-  <a-row :gutter="[16, 16]" v-else>
+  <a-row :gutter="[16, 16]" v-else justify="center">
 
-    <a-col :span="8" v-for="post in posts" :key="post.post_id">
-      <PostCard :post_id="post.post_id" :username="post.username" :content="post.content" :created_at="post.created_at" :imageURL="post.image_url" :user_id="post.user_id" />
+    <a-col :span="24" v-for="post in posts" :key="post.post_id" style="display: flex; justify-content: center;">
+      <PostCard :post_id="post.post_id" :username="post.username" :content="post.content" :created_at="post.created_at" 
+      :imageURL="post.image_url" :user_id="post.user_id" :likes_count="post.likes_count" style="width: 100%; max-width: 600px;" />
     </a-col>
 
   </a-row>
