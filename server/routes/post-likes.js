@@ -9,14 +9,9 @@ const can = require('../permissions/likes')
 const prefix = '/api/v1/post_likes';
 const router = new Router({ prefix: prefix });
 
-router.get('/:post_id', auth.requireJWT, getPostLikes);
+router.get('/:post_id/is_liked', auth.requireJWT, isPostLiked);
 router.post('/:post_id', auth.requireJWT, createPostLike);
 router.del('/:post_id', auth.requireJWT, deletePostLike);
-
-async function getPostLikes(ctx) {
-    const postID = ctx.params.post_id;
-    ctx.body = String(await model.countPostLikes(postID));
-}
 
 async function createPostLike(ctx) {
     const postID = ctx.params.post_id;
@@ -37,6 +32,25 @@ async function createPostLike(ctx) {
             ctx.status = 500;
             ctx.body = { error: "Internal Server Error." }
         }
+    }
+}
+
+async function isPostLiked(ctx) {
+    const postID = ctx.params.post_id;
+    const userID = ctx.state.user.id;
+    try {
+        const result = await model.getPostLike(postID, userID);
+        if (result) {
+            ctx.status = 200;
+            ctx.body = { liked: true };
+        } else {
+            ctx.status = 200;
+            ctx.body = { liked: false };
+        }
+    } catch (err) {        
+        console.error("Error occured while checking post like: ", err);
+        ctx.status = 500;
+        ctx.body = { error: "Internal Server Error." }
     }
 }
 

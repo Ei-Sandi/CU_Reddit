@@ -2,9 +2,18 @@ const db = require('../helpers/database');
 
 exports.getAllPosts = async function getAllPosts() {
     const query = `
-        SELECT users.username, posts.user_id, posts.id AS post_id, posts.content, posts.image_url, posts.created_at
+        SELECT 
+            users.username, 
+            posts.user_id, 
+            posts.id AS post_id, 
+            posts.content, 
+            posts.image_url, 
+            posts.created_at,
+            COUNT(posts_likes.id) AS likes_count
         FROM posts
-        JOIN users ON posts.user_id = users.id;
+        JOIN users ON posts.user_id = users.id
+        LEFT JOIN posts_likes ON posts.id = posts_likes.post_id
+        GROUP BY posts.id, users.username, posts.user_id, posts.content, posts.image_url, posts.created_at;
     `;
     const data = await db.run_query(query);
     return data;
@@ -12,10 +21,19 @@ exports.getAllPosts = async function getAllPosts() {
 
 exports.getPostByUserID = async function getPostByUserID(userID) {
     const query = `
-        SELECT users.username, posts.user_id, posts.id AS post_id, posts.content, posts.image_url, posts.created_at
+        SELECT 
+            users.username, 
+            posts.user_id, 
+            posts.id AS post_id, 
+            posts.content, 
+            posts.image_url, 
+            posts.created_at,
+            COUNT(posts_likes.id) AS likes_count
         FROM posts
         JOIN users ON posts.user_id = users.id
-        WHERE posts.user_id = ?;
+        LEFT JOIN posts_likes ON posts.id = posts_likes.post_id
+        WHERE posts.user_id = ?
+        GROUP BY posts.id, users.username, posts.user_id, posts.content, posts.image_url, posts.created_at;
     `;
     const data = await db.run_query(query, [userID]);
     return data;

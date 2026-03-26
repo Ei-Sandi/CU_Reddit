@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { EditOutlined, DeleteOutlined, LikeOutlined, LikeFilled, CommentOutlined } from '@ant-design/icons-vue';
 import { useUserStore } from '@/stores/user';
 import { config } from '@/config';
 
@@ -14,11 +14,34 @@ const props = defineProps({
   content: String,
   created_at: String,
   imageURL: String,
-  user_id: [String, Number]
+  user_id: [String, Number],
+  likes_count: { type: Number, default: 0 }
 })
 
 const isEditing = ref(false);
 const editContent = ref(props.content);
+
+const hasLiked = ref(false);
+const likeCount = ref(props.likes_count);
+
+console.log(likeCount);
+
+onMounted(async () => {
+  // Fetch user's like status
+  try {
+    const response = await fetch(`${config.SERVER_URL}/post_likes/${props.post_id}/is_liked`, {
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    });
+    if (response.ok) {
+      const data = await response.json();
+      hasLiked.value = data.liked;
+    }
+  } catch (error) {
+    console.error("Failed to fetch like status:", error);
+  }
+});
 
 async function deletePost() {
   if (!confirm("Are you sure you want to delete this post?")) return;
@@ -66,10 +89,52 @@ async function handleEdit() {
   }
 }
 
+async function likePost() {
+  try {
+    const response = await fetch(`${config.SERVER_URL}/post_likes/${props.post_id}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    })
+
+    if (response.ok) {
+      hasLiked.value = true;
+      likeCount.value++;
+    } else {
+      const data = await response.json();
+      alert(`Post Like failed: ${data.error || 'Unknown error'}`);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function removeLikeFromPost() {
+  try {
+    const response = await fetch(`${config.SERVER_URL}/post_likes/${props.post_id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    })
+
+    if (response.ok) {
+      hasLiked.value = false;
+      likeCount.value = Math.max(0, likeCount.value - 1);
+    } else {
+      const data = await response.json();
+      alert(`Post Unlike failed: ${data.error || 'Unknown error'}`);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 </script>
 
 <template>
-  <a-card hoverable style="width: 300px; position: relative;">
+  <a-card hoverable style="position: relative;">
 
     <div class="top-actions">
       <EditOutlined class="action-icon" key="edit" v-can="{ role: ['admin'], ownerId: user_id }"
@@ -78,23 +143,49 @@ async function handleEdit() {
         @click="deletePost" />
     </div>
 
-    <template #cover>
-      <img :alt="title" :src="imageURL || 'https://picsum.photos/300/200'" />
+    <div class="card-header">
+      <h4 class="username-title">{{ username }}</h4>
+    </div>
+
+    <div class="card-content">
+      <div v-if="!isEditing">
+        <p>{{ content }}</p>
+      </div>
+      <div v-else>
+        <a-textarea v-model:value="editContent" :rows="3" style="margin-bottom: 10px;" />
+        <a-button type="primary" size="small" @click="handleEdit">Save</a-button>
+        <a-button size="small" style="margin-left: 8px;" @click="isEditing = false">Cancel</a-button>
+      </div>
+      <small style="color: gray; display: block; margin-bottom: 12px;">Posted: {{ new Date(created_at).toLocaleString()
+        }}</small>
+    </div>
+
+    <div class="card-image" v-if="imageURL">
+      <img :alt="username + ' post image'" :src="imageURL" />
+    </div>
+
+    <div class="stats-row" v-if="likeCount > 0">
+      <LikeFilled style="color: #1890ff; margin-right: 6px;" />
+      <span class="stats-text">{{ likeCount }} {{ likeCount === 1 ? 'Like' : 'Likes' }}</span>
+    </div>
+
+    <template #actions>
+      <!-- We need a single root wrapper inside the action slot, otherwise Ant Design maps loops over them incorrectly -->
+      <div v-if="hasLiked" class="action-btn liked-active" @click="removeLikeFromPost">
+        <LikeFilled />
+        <span class="action-text">Liked</span>
+      </div>
+      <div v-else class="action-btn" @click="likePost">
+        <LikeOutlined />
+        <span class="action-text">Like</span>
+      </div>
+
+      <div class="action-btn">
+        <CommentOutlined />
+        <span class="action-text">Comment</span>
+      </div>
     </template>
 
-    <a-card-meta :title="username">
-      <template #description>
-        <div v-if="!isEditing">
-          <p>{{ content }}</p>
-        </div>
-        <div v-else>
-          <a-textarea v-model:value="editContent" :rows="3" style="margin-bottom: 10px;" />
-          <a-button type="primary" size="small" @click="handleEdit">Save</a-button>
-          <a-button size="small" style="margin-left: 8px;" @click="isEditing = false">Cancel</a-button>
-        </div>
-        <small style="color: gray;">Posted: {{ new Date(created_at).toLocaleString() }}</small>
-      </template>
-    </a-card-meta>
   </a-card>
 </template>
 
@@ -107,7 +198,6 @@ async function handleEdit() {
   display: flex;
   gap: 12px;
   background: rgba(255, 255, 255, 0.85);
-  /* Light background to make buttons visible over dark images */
   padding: 6px 10px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -131,5 +221,73 @@ async function handleEdit() {
 
 .delete-icon:hover {
   color: #cf1322;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #555;
+  transition: color 0.3s;
+}
+
+.action-btn:hover {
+  color: #1890ff;
+}
+
+.liked-active {
+  color: #1890ff;
+}
+
+.action-text {
+  font-size: 14px;
+}
+
+.card-header {
+  padding: 16px 24px 0 24px;
+}
+
+.username-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.card-content {
+  padding: 12px 24px;
+}
+
+.card-content p {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.stats-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+}
+
+.stats-text {
+  font-size: 13px;
+  color: #666;
+}
+
+.card-image {
+  width: 100%;
+}
+
+.card-image img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+:deep(.ant-card-body) {
+  padding: 0 !important;
 }
 </style>
