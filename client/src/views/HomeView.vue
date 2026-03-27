@@ -1,5 +1,5 @@
 <script setup>
-import WelcomePage from '@/components/WelcomePage.vue';
+import WelcomeView from './WelcomeView.vue';
 import PostGrid from '../components/PostGrid.vue'
 import { useUserStore } from '@/stores/user';
 
@@ -23,7 +23,7 @@ const userStore = useUserStore();
   </div>
 
   <div v-else>  
-    <WelcomePage />
+    <WelcomeView />
   </div>
 </template>
 
