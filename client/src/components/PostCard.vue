@@ -1,11 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { EditOutlined, DeleteOutlined, LikeOutlined, LikeFilled, CommentOutlined } from '@ant-design/icons-vue';
 import { useUserStore } from '@/stores/user';
 import { config } from '@/config';
+import CommentCard from './CommentCard.vue';
 
-const router = useRouter();
 const userStore = useUserStore();
 
 const props = defineProps({
@@ -23,8 +22,10 @@ const editContent = ref(props.content);
 
 const hasLiked = ref(false);
 const likeCount = ref(props.likes_count);
-
-console.log(likeCount);
+const showComments = ref(false);
+const newComment = ref('');
+const postComments = ref([]);
+const commentsLoading = ref(false);
 
 onMounted(async () => {
   // Fetch user's like status
@@ -131,6 +132,66 @@ async function removeLikeFromPost() {
   }
 }
 
+async function toggleComments() {
+  showComments.value = !showComments.value;
+  if (showComments.value && postComments.value.length === 0) {
+    await fetchComments();
+  }
+}
+
+async function fetchComments() {
+  commentsLoading.value = true;
+  try {
+    const response = await fetch(`${config.SERVER_URL}/comments/${props.post_id}`, {
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    });
+    if (response.ok) {
+      postComments.value = await response.json();
+    } else {
+      alert('Failed to fetch comments.');
+    }
+  } catch (error) {
+    console.error('Failed to fetch comments:', error);
+  } finally {
+    commentsLoading.value = false;
+  }
+}
+
+async function handleCommentSubmit() {
+  if (!newComment.value.trim()) {
+    alert('Please enter a comment.');
+    return;
+  }
+
+  try {
+    const payload = {
+      content: newComment.value,
+    };
+
+    const response = await fetch(`${config.SERVER_URL}/comments/${props.post_id}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      newComment.value = '';
+      await fetchComments();
+    } else {
+      const data = await response.json();
+      alert(`Failed to create comment: ${data.error || 'Unknown error'}`);
+    }
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 </script>
 
 <template>
@@ -157,7 +218,7 @@ async function removeLikeFromPost() {
         <a-button size="small" style="margin-left: 8px;" @click="isEditing = false">Cancel</a-button>
       </div>
       <small style="color: gray; display: block; margin-bottom: 12px;">Posted: {{ new Date(created_at).toLocaleString()
-        }}</small>
+      }}</small>
     </div>
 
     <div class="card-image" v-if="imageURL">
@@ -180,12 +241,20 @@ async function removeLikeFromPost() {
         <span class="action-text">Like</span>
       </div>
 
-      <div class="action-btn">
+      <div class="action-btn" @click="toggleComments">
         <CommentOutlined />
         <span class="action-text">Comment</span>
       </div>
     </template>
-
+    <div v-if="showComments" class="comments-section">
+      <div v-if="commentsLoading">Loading comments...</div>
+      <CommentCard v-else v-for="comment in postComments" :key="comment.id" :username="comment.username"
+        :comment="comment.content" :comment_id="comment.id" :user_id="comment.user_id" :likes_count="comment.likes_count" />
+      <div class="comment-form">
+        <a-input v-model:value="newComment" placeholder="Add a comment..." @keyup.enter="handleCommentSubmit"/>
+        <a-button @click="handleCommentSubmit" type="primary">Submit</a-button>
+      </div>
+    </div>
   </a-card>
 </template>
 
@@ -285,6 +354,17 @@ async function removeLikeFromPost() {
   max-height: 400px;
   object-fit: cover;
   display: block;
+}
+
+.comments-section {
+  padding: 0 24px 12px;
+  margin-top: 16px;
+}
+
+.comment-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 :deep(.ant-card-body) {
