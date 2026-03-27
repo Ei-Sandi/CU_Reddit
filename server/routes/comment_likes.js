@@ -2,11 +2,13 @@ const Router = require('koa-router');
 
 const model = require('../models/comment_likes');
 
-const auth = require('../controllers/auth')
+const auth = require('../controllers/auth');
+const can = require('../permissions/likes');
 
 const prefix = '/api/v1/comment_likes';
 const router = new Router({ prefix: prefix });
 
+router.get('/:comment_id/is_liked', auth.requireJWT, isCommentLiked);
 router.get('/:comment_id', auth.requireJWT, getCommentLikes);
 router.post('/:comment_id', auth.requireJWT, createCommentLike);
 router.del('/:comment_id', auth.requireJWT, deleteCommentLike);
@@ -14,6 +16,25 @@ router.del('/:comment_id', auth.requireJWT, deleteCommentLike);
 async function getCommentLikes(ctx) {
     const commentID = ctx.params.comment_id;
     ctx.body = String(await model.countCommentLikes(commentID));
+}
+
+async function isCommentLiked(ctx) {
+    const commentID = ctx.params.comment_id;
+    const userID = ctx.state.user.id;
+    try {
+        const result = await model.getCommentLike(commentID, userID);
+        if (result) {
+            ctx.status = 200;
+            ctx.body = { liked: true };
+        } else {
+            ctx.status = 200;
+            ctx.body = { liked: false };
+        }
+    } catch (err) {
+        console.error("Error occured while checking comment like: ", err);
+        ctx.status = 500;
+        ctx.body = { error: "Internal Server Error." }
+    }
 }
 
 async function createCommentLike(ctx) {

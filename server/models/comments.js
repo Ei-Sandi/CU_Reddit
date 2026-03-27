@@ -1,7 +1,14 @@
 const db = require('../helpers/database');
 
 exports.getAllCommentsOfAPost = async function getAllCommentsOfAPost(postID) {
-    const query = "SELECT * FROM comments WHERE post_id = ?;";
+    const query = `
+        SELECT comments.*, users.username, COUNT(cl.id) AS likes_count
+        FROM comments 
+        JOIN users ON comments.user_id = users.id
+        LEFT JOIN comments_likes cl ON comments.id = cl.comment_id
+        WHERE comments.post_id = ?
+        GROUP BY comments.id;
+    `;
     const data = await db.run_query(query, [postID]);
     return data;
 }
