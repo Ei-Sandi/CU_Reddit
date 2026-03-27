@@ -12,8 +12,7 @@ const checkJwtPayload = async (jwt_payload, done) => {
     try {
         const user = await model.getUserByID(jwt_payload.ID);
         if (user) {
-            console.log(`Successfully authenticated user via JWT: ${user.username}`);
-            return done(null, user); 
+            return done(null, user);
         } else {
             console.log("JWT matched, but user no longer exists in DB.");
             return done(null, false);
