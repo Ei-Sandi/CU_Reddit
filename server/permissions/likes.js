@@ -6,6 +6,11 @@ ac.grant('member')
     .execute('delete')
     .on('post');
 
+ac.grant('admin')
+    .condition({ Fn: 'EQUALS', args: { 'requester': '$.owner' } })
+    .execute('delete')
+    .on('post');
+
 exports.delete = (requester, data) => {
     return ac
         .can(requester.role)

@@ -21,11 +21,15 @@ const userStore = useUserStore()
           <RouterLink class="nav-link" to="/register">Register</RouterLink>
         </a-menu-item>
 
-        <a-menu-item key="4" v-if="userStore.user.loggedIn" style="margin-left: auto;">
+        <a-menu-item key="4" v-if="userStore.user.role === 'admin'" style="margin-left: auto;">
+          <RouterLink class="nav-link" to="/admin"> Admin Dashboard </RouterLink>
+        </a-menu-item>
+
+        <a-menu-item key="5" v-if="userStore.user.loggedIn" style="margin-left: auto;">
           <RouterLink class="nav-link" to="/profile">My Profile</RouterLink>
         </a-menu-item>
 
-        <a-menu-item key="5" v-if="userStore.user.loggedIn" @click="userStore.logout">
+        <a-menu-item key="6" v-if="userStore.user.loggedIn" @click="userStore.logout">
           <span class="nav-link">Logout</span>
         </a-menu-item>
 
