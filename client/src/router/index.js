@@ -22,8 +22,22 @@ const router = createRouter({
   ]
 })
 
+const isTokenExpired = (tokenString) => {
+  try {
+      const payload = JSON.parse(atob(tokenString.split('.')[1]));
+      return payload.exp * 1000 < Date.now();
+  } catch (e) {
+      return true;
+  }
+};
+
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
+
+  // Validate token expiration before navigation
+  if (userStore.user.loggedIn && userStore.token && isTokenExpired(userStore.token)) {
+    userStore.logout();
+  }
 
   if (to.meta.requiresAuth && !userStore.user.loggedIn) {
     alert("You must be logged in to view this page.");

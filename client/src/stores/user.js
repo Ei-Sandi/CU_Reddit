@@ -12,12 +12,27 @@ export const useUserStore = defineStore('user', () => {
         role: ''
     })
 
+    const isTokenExpired = (tokenString) => {
+        try {
+            const payload = JSON.parse(atob(tokenString.split('.')[1]));
+            return payload.exp * 1000 < Date.now();
+        } catch (e) {
+            return true;
+        }
+    };
+
     const storedUser = localStorage.getItem('user')
     const storedToken = localStorage.getItem('access_token');
 
     if (storedUser && storedToken) {
-        user.value = JSON.parse(storedUser)
-        token.value = storedToken
+        if (!isTokenExpired(storedToken)) {
+            user.value = JSON.parse(storedUser)
+            token.value = storedToken
+        } else {
+            // Token expired during absence
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('user')
+        }
     }
 
     function login(apiResponse) {

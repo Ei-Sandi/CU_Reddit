@@ -1,8 +1,32 @@
 <script setup>
-import { RouterView, RouterLink } from 'vue-router'
+import { RouterView, RouterLink, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { onMounted } from 'vue'
 
 const userStore = useUserStore()
+const router = useRouter()
+
+const handleLogout = () => {
+  userStore.logout()
+  router.push('/')
+}
+
+onMounted(() => {
+  // Check if token is expired every minute and log out if it is
+  setInterval(() => {
+    if (userStore.user.loggedIn && userStore.token) {
+      try {
+        const payload = JSON.parse(atob(userStore.token.split('.')[1]));
+        if (payload.exp * 1000 < Date.now()) {
+          alert('Your session has expired. Please log in again.');
+          handleLogout();
+        }
+      } catch (e) {
+        handleLogout();
+      }
+    }
+  }, 60000); // 60 seconds
+})
 </script>
 
 <template>
@@ -29,7 +53,7 @@ const userStore = useUserStore()
           <RouterLink class="nav-link" to="/profile">My Profile</RouterLink>
         </a-menu-item>
 
-        <a-menu-item key="6" v-if="userStore.user.loggedIn" @click="userStore.logout">
+        <a-menu-item key="6" v-if="userStore.user.loggedIn" @click="handleLogout">
           <span class="nav-link">Logout</span>
         </a-menu-item>
 
