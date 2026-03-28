@@ -1,10 +1,5 @@
 const model = require('../models/comment-like-model');
 
-async function getCommentLikes(ctx) {
-    const commentID = ctx.params.comment_id;
-    ctx.body = String(await model.countCommentLikes(commentID));
-}
-
 async function isCommentLiked(ctx) {
     const commentID = ctx.params.comment_id;
     const userID = ctx.state.user.id;
@@ -67,7 +62,6 @@ async function deleteCommentLike(ctx) {
 }
 
 module.exports = {
-    getCommentLikes,
     isCommentLiked,
     createCommentLike,
     deleteCommentLike

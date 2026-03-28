@@ -1,11 +1,5 @@
 const db = require('../helpers/database');
 
-exports.countCommentLikes = async function countCommentLikes(commentID) {
-    const query = "SELECT COUNT(*) as count FROM comments_likes WHERE comment_id = ?;";
-    const data = await db.run_query(query, [commentID]);
-    return data.length ? data[0].count : 0;
-}
-
 exports.getCommentLike = async function getCommentLike(commentID, userID) {
     const query = "SELECT * FROM comments_likes WHERE comment_id = ? AND user_id = ?;";
     const data = await db.run_query(query, [commentID, userID]);
