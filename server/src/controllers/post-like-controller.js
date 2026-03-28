@@ -1,17 +1,5 @@
-const Router = require('koa-router');
-
-const model = require('../models/post_likes');
-
-const auth = require('../controllers/auth');
-
-const can = require('../permissions/likes')
-
-const prefix = '/api/v1/post_likes';
-const router = new Router({ prefix: prefix });
-
-router.get('/:post_id/is_liked', auth.requireJWT, isPostLiked);
-router.post('/:post_id', auth.requireJWT, createPostLike);
-router.del('/:post_id', auth.requireJWT, deletePostLike);
+const model = require('../models/post-like-model');
+const can = require('../permissions/like-permissions');
 
 async function createPostLike(ctx) {
     const postID = ctx.params.post_id;
@@ -47,7 +35,7 @@ async function isPostLiked(ctx) {
             ctx.status = 200;
             ctx.body = { liked: false };
         }
-    } catch (err) {        
+    } catch (err) {
         console.error("Error occured while checking post like: ", err);
         ctx.status = 500;
         ctx.body = { error: "Internal Server Error." }
@@ -62,13 +50,13 @@ async function deletePostLike(ctx) {
     if (!postLike) {
         ctx.status = 404;
         ctx.body = { error: "Like not found." };
-        return; 
+        return;
     }
 
     const permission = can.delete(ctx.state.user, postLike);
 
     if (!permission.granted) {
-        ctx.status = 403; 
+        ctx.status = 403;
         ctx.body = { error: "You do not own this post." };
         return;
     }
@@ -89,4 +77,8 @@ async function deletePostLike(ctx) {
     }
 }
 
-module.exports = router;
+module.exports = {
+    createPostLike,
+    isPostLiked,
+    deletePostLike
+};

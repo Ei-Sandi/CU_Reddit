@@ -1,23 +1,7 @@
-const Router = require('koa-router');
-
-const model = require('../models/posts');
-
-const auth = require('../controllers/auth');
-
-const { validatePostContent } = require('../controllers/validation');
-
-const can = require('../permissions/posts');
+const model = require('../models/post-model');
+const can = require('../permissions/post-permissions');
 const fs = require('fs/promises');
 const path = require('path');
-
-const prefix = '/api/v1/posts';
-const router = new Router({ prefix: prefix });
-
-router.get('/', auth.requireJWT, getAllPosts);
-router.get('/:user_id', auth.requireJWT, getPostByUserID);
-router.post('/', auth.requireJWT, validatePostContent, createNewPost);
-router.put('/:post_id', auth.requireJWT, validatePostContent, editPost);
-router.del('/:post_id', auth.requireJWT, deletePost);
 
 async function getAllPosts(ctx) {
     ctx.body = await model.getAllPosts();
@@ -36,7 +20,7 @@ async function createNewPost(ctx) {
         ctx.status = 400;
         ctx.body = { error: "Content required to create post." };
         return;
-    } 
+    }
 
     try {
         const imageURL = body.imageURL || null;
@@ -69,13 +53,13 @@ async function editPost(ctx) {
     if (!post) {
         ctx.status = 404;
         ctx.body = { error: "Post not found." };
-        return; 
+        return;
     }
-    
+
     const permission = can.update(ctx.state.user, post);
 
     if (!permission.granted) {
-        ctx.status = 403; 
+        ctx.status = 403;
         ctx.body = { error: "You do not own this post." };
         return;
     }
@@ -103,13 +87,13 @@ async function deletePost(ctx) {
     if (!post) {
         ctx.status = 404;
         ctx.body = { error: "Post not found." };
-        return; 
+        return;
     }
 
     const permission = can.delete(ctx.state.user, post);
 
     if (!permission.granted) {
-        ctx.status = 403; 
+        ctx.status = 403;
         ctx.body = { error: "You do not own this post." };
         return;
     }
@@ -141,4 +125,10 @@ async function deletePost(ctx) {
     }
 }
 
-module.exports = router
+module.exports = {
+    getAllPosts,
+    getPostByUserID,
+    createNewPost,
+    editPost,
+    deletePost
+};

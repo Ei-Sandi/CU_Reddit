@@ -1,20 +1,5 @@
-const Router = require('koa-router');
-
-const model = require('../models/comments');
-
-const auth = require('../controllers/auth');
-
-const { validateCommentContent } = require('../controllers/validation');
-
-const can = require('../permissions/comments')
-
-const prefix = '/api/v1/comments';
-const router = new Router({ prefix: prefix });
-
-router.get('/:post_id', auth.requireJWT, getAllCommentsOfAPost);
-router.post('/:post_id', auth.requireJWT, validateCommentContent, createNewComment);
-router.put('/:comment_id', auth.requireJWT, validateCommentContent, editComment);
-router.del('/:comment_id', auth.requireJWT, deleteComment);
+const model = require('../models/comment-model');
+const can = require('../permissions/comment-permissions');
 
 async function getAllCommentsOfAPost(ctx) {
     const postID = ctx.params.post_id;
@@ -58,7 +43,7 @@ async function editComment(ctx) {
 
     if (!comment) {
         ctx.status = 404;
-        ctx.body = { error: "Comment not found." }; 
+        ctx.body = { error: "Comment not found." };
         return;
     }
 
@@ -94,7 +79,7 @@ async function deleteComment(ctx) {
     const comment = await model.getCommentByCommentID(commentID);
     if (!comment) {
         ctx.status = 404;
-        ctx.body = { error: "Comment not found."};
+        ctx.body = { error: "Comment not found." };
         return;
     }
 
@@ -122,4 +107,9 @@ async function deleteComment(ctx) {
     }
 }
 
-module.exports = router
+module.exports = {
+    getAllCommentsOfAPost,
+    createNewComment,
+    editComment,
+    deleteComment
+};

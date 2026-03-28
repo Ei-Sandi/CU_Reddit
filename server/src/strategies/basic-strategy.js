@@ -1,5 +1,5 @@
 const { BasicStrategy } = require('passport-http');
-const model = require('../models/users');
+const model = require('../models/user-model');
 const bcrypt = require('bcrypt');
 
 const verifyPassword = async function (user, password) {

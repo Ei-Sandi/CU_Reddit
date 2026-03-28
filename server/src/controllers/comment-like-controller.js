@@ -1,17 +1,5 @@
-const Router = require('koa-router');
-
-const model = require('../models/comment_likes');
-
-const auth = require('../controllers/auth');
-const can = require('../permissions/likes');
-
-const prefix = '/api/v1/comment_likes';
-const router = new Router({ prefix: prefix });
-
-router.get('/:comment_id/is_liked', auth.requireJWT, isCommentLiked);
-router.get('/:comment_id', auth.requireJWT, getCommentLikes);
-router.post('/:comment_id', auth.requireJWT, createCommentLike);
-router.del('/:comment_id', auth.requireJWT, deleteCommentLike);
+const model = require('../models/comment-like-model');
+const can = require('../permissions/like-permissions');
 
 async function getCommentLikes(ctx) {
     const commentID = ctx.params.comment_id;
@@ -67,13 +55,13 @@ async function deleteCommentLike(ctx) {
     if (!commentLike) {
         ctx.status = 404;
         ctx.body = { error: "Like not found." };
-        return; 
+        return;
     }
 
     const permission = can.delete(ctx.state.user, commentLike);
 
     if (!permission.granted) {
-        ctx.status = 403; 
+        ctx.status = 403;
         ctx.body = { error: "You do not own this comment." };
         return;
     }
@@ -94,4 +82,9 @@ async function deleteCommentLike(ctx) {
     }
 }
 
-module.exports = router;
+module.exports = {
+    getCommentLikes,
+    isCommentLiked,
+    createCommentLike,
+    deleteCommentLike
+};

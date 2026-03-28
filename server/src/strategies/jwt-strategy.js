@@ -1,6 +1,6 @@
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const model = require('../models/users'); 
+const model = require('../models/user-model'); 
 const { JWT_SECRETKEY } = require('../../config');
 
 const opts = {
