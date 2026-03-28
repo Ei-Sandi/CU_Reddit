@@ -25,6 +25,6 @@
   },
   "scripts": {
     "start": "node src/app.js",
-    "test": "cross-env NODE_ENV=test jest --forceExit"
+    "test": "cross-env NODE_ENV=test jest --globalSetup ./__tests__/setup.js --testMatch '**/*.test.js' --forceExit"
   }
 }
