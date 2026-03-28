@@ -9,6 +9,12 @@ exports.createNewUser = async function createNewUser(user) {
     return data;
 }
 
+exports.getAllUsers = async function getAllUsers() {
+    const query = "SELECT id, username, email, role FROM users;";
+    const data = await db.run_query(query);
+    return data;
+}
+
 // Note: This returns password for logging in.
 exports.getUserByEmail = async function getUserByEmail(email) {
     const query = "SELECT * FROM users WHERE email = ?;";

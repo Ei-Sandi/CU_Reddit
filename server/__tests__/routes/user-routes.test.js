@@ -8,6 +8,7 @@ describe('User Routes', () => {
         }));
 
         expect(routes).toEqual(expect.arrayContaining([
+            expect.objectContaining({ path: '/api/v1/users', methods: expect.arrayContaining(['GET']) }),
             expect.objectContaining({ path: '/api/v1/users', methods: expect.arrayContaining(['POST']) }),
             expect.objectContaining({ path: '/api/v1/users/login', methods: expect.arrayContaining(['POST']) }),
             expect.objectContaining({ path: '/api/v1/users', methods: expect.arrayContaining(['PUT']) }),

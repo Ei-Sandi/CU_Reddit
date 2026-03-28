@@ -140,6 +140,15 @@ async function canDeleteUser(ctx, next) {
     return next();
 }
 
+async function canManageUsers(ctx, next) {
+    if (ctx.state.user.role !== 'admin') {
+        ctx.status = 403;
+        ctx.body = { error: "You do not have permission to manage users." };
+        return;
+    }
+    return next();
+}
+
 async function canDeleteCommentLike(ctx, next) {
     const commentID = ctx.params.comment_id;
     const userID = ctx.state.user.id;
@@ -191,6 +200,7 @@ module.exports = {
     canDeletePost,
     canUpdateUser,
     canDeleteUser,
+    canManageUsers,
     canDeleteCommentLike,
     canDeletePostLike
 };
