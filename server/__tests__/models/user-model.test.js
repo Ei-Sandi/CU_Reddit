@@ -25,6 +25,19 @@ describe('User Model Unit Tests', () => {
         expect(result.affectedRows).toBe(1);
     });
 
+    test('getAllUsers should return a list of users without passwords', async () => {
+        const mockUsers = [
+            { id: 1, username: 'testuser1', email: 'test1@test.com', role: 'member' },
+            { id: 2, username: 'admin', email: 'admin@test.com', role: 'admin' }
+        ];
+        db.run_query.mockResolvedValue(mockUsers);
+
+        const result = await userModel.getAllUsers();
+
+        expect(db.run_query).toHaveBeenCalledWith(expect.stringContaining('SELECT id, username, email, role FROM users'));
+        expect(result).toEqual(mockUsers);
+    });
+
     test('getUserByEmail should return the first row', async () => {
         const mockUser = { id: 1, email: 'test@test.com' };
         db.run_query.mockResolvedValue([mockUser]);

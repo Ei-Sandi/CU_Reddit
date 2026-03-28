@@ -30,6 +30,30 @@ describe('User Controller (Unit)', () => {
         console.error.mockRestore();
     });
 
+    describe('getAllUsers', () => {
+        it('should return a list of all users', async () => {
+            const mockUsers = [
+                { id: 1, username: 'user1', email: 'user1@example.com', role: 'member' },
+                { id: 2, username: 'admin1', email: 'admin1@example.com', role: 'admin' }
+            ];
+            userModel.getAllUsers.mockResolvedValue(mockUsers);
+
+            await userController.getAllUsers(ctx);
+
+            expect(userModel.getAllUsers).toHaveBeenCalled();
+            expect(ctx.body).toEqual(mockUsers);
+        });
+
+        it('should return an empty list if no users exist', async () => {
+            userModel.getAllUsers.mockResolvedValue([]);
+
+            await userController.getAllUsers(ctx);
+
+            expect(userModel.getAllUsers).toHaveBeenCalled();
+            expect(ctx.body).toEqual([]);
+        });
+    });
+
     describe('registerUser', () => {
         it('should register successfully', async () => {
             ctx.request.body = { username: 'newuser', password: 'password123', retypePassword: 'password123' };

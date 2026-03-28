@@ -5,6 +5,10 @@ const { JWT_SECRETKEY } = require('../../config');
 const fs = require('fs/promises');
 const path = require('path');
 
+async function getAllUsers(ctx) {
+    ctx.body = await userModel.getAllUsers();
+}
+
 async function registerUser(ctx) {
     const body = ctx.request.body;
 
@@ -124,6 +128,7 @@ async function deleteUser(ctx) {
 }
 
 module.exports = {
+    getAllUsers,
     registerUser,
     loginUser,
     changeUserName,
