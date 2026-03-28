@@ -1,26 +1,10 @@
-const Router = require('koa-router');
-
-const userModel = require('../models/users');
-const postModel = require('../models/posts');
-
-const auth = require('../controllers/auth');
+const userModel = require('../models/user-model');
+const postModel = require('../models/post-model');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRETKEY } = require('../../config');
-
-const { validateUserRegistration, validateUsernameUpdate } = require('../controllers/validation');
-
 const fs = require('fs/promises');
 const path = require('path');
-
-const can = require('../permissions/users');
-
-const prefix = '/api/v1/users';
-const router = new Router({ prefix: prefix });
-
-router.post('/', validateUserRegistration, registerUser);
-router.post('/login', auth.requireBasic, loginUser);
-router.put('/', auth.requireJWT, validateUsernameUpdate, changeUserName);
-router.del('/:id', auth.requireJWT, deleteUser);
+const can = require('../permissions/user-permissions');
 
 async function registerUser(ctx) {
     const body = ctx.request.body;
@@ -100,7 +84,7 @@ async function changeUserName(ctx) {
     const permission = can.update(ctx.state.user, user);
 
     if (!permission.granted) {
-        ctx.status = 403; 
+        ctx.status = 403;
         ctx.body = { error: "You do not own this account." };
         return;
     }
@@ -128,13 +112,13 @@ async function deleteUser(ctx) {
     if (!user) {
         ctx.status = 404;
         ctx.body = { error: "User not found." };
-        return; 
+        return;
     }
 
     const permission = can.delete(ctx.state.user, user);
-    
+
     if (!permission.granted) {
-        ctx.status = 403; 
+        ctx.status = 403;
         ctx.body = { error: "You do not own this account." };
         return;
     }
@@ -170,4 +154,9 @@ async function deleteUser(ctx) {
     }
 }
 
-module.exports = router;
+module.exports = {
+    registerUser,
+    loginUser,
+    changeUserName,
+    deleteUser
+};

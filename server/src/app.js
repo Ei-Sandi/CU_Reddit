@@ -5,12 +5,12 @@ const { koaBody } = require('koa-body');
 const db = require('./helpers/database');
 const requestLogger = require('./helpers/logger');
 
-const users = require('./routes/users');
-const posts = require('./routes/posts');
-const comments = require('./routes/comments');
-const postLikes = require('./routes/post-likes');
-const commentLikes = require('./routes/comment_likes');
-const uploads = require('./routes/uploads.js');
+const users = require('./routes/user-routes');
+const posts = require('./routes/post-routes');
+const comments = require('./routes/comment-routes');
+const postLikes = require('./routes/post-like-routes');
+const commentLikes = require('./routes/comment-like-routes');
+const uploads = require('./routes/upload-routes.js');
 
 const { SERVER_PORT } = require('../config');
 

@@ -1,25 +1,18 @@
-const Router = require('koa-router');
-const auth = require('../controllers/auth');
 const { v4: uuidv4 } = require('uuid');
 const mime = require('mime-types');
-const fs = require('fs/promises'); 
+const fs = require('fs/promises');
 const path = require('path');
 const { createReadStream } = require('fs');
-const router = new Router({ prefix: '/api/v1' });
 
 const uploadDir = path.join(process.cwd(), 'uploads');
 
 (async () => {
     try {
         await fs.mkdir(uploadDir, { recursive: true });
-        console.log(`Storage directory confirmed: ${uploadDir}`);
     } catch (err) {
         console.error('Error creating upload dir:', err);
     }
 })();
-
-router.post('/images', auth.requireJWT, uploadImage);
-router.get('/images/:filename', getImage);
 
 async function uploadImage(ctx) {
     try {
@@ -60,4 +53,7 @@ async function getImage(ctx) {
     }
 }
 
-module.exports = router;
+module.exports = {
+    uploadImage,
+    getImage
+};
