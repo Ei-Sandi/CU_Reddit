@@ -1,5 +1,4 @@
 const model = require('../models/comment-like-model');
-const can = require('../permissions/like-permissions');
 
 async function getCommentLikes(ctx) {
     const commentID = ctx.params.comment_id;
@@ -50,21 +49,6 @@ async function createCommentLike(ctx) {
 async function deleteCommentLike(ctx) {
     const commentID = ctx.params.comment_id;
     const userID = ctx.state.user.id;
-
-    const commentLike = await model.getCommentLike(commentID, userID);
-    if (!commentLike) {
-        ctx.status = 404;
-        ctx.body = { error: "Like not found." };
-        return;
-    }
-
-    const permission = can.delete(ctx.state.user, commentLike);
-
-    if (!permission.granted) {
-        ctx.status = 403;
-        ctx.body = { error: "You do not own this comment." };
-        return;
-    }
 
     try {
         const result = await model.deleteCommentLike(commentID, userID);

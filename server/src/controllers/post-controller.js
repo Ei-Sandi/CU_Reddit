@@ -1,5 +1,4 @@
 const model = require('../models/post-model');
-const can = require('../permissions/post-permissions');
 const fs = require('fs/promises');
 const path = require('path');
 
@@ -48,21 +47,7 @@ async function editPost(ctx) {
     }
 
     const postID = ctx.params.post_id;
-    const post = await model.getPostByPostID(postID);
 
-    if (!post) {
-        ctx.status = 404;
-        ctx.body = { error: "Post not found." };
-        return;
-    }
-
-    const permission = can.update(ctx.state.user, post);
-
-    if (!permission.granted) {
-        ctx.status = 403;
-        ctx.body = { error: "You do not own this post." };
-        return;
-    }
     try {
         const result = await model.updatePost(postID, body.content);
         if (result.affectedRows) {
@@ -82,21 +67,7 @@ async function editPost(ctx) {
 
 async function deletePost(ctx) {
     const postID = ctx.params.post_id;
-
-    const post = await model.getPostByPostID(postID);
-    if (!post) {
-        ctx.status = 404;
-        ctx.body = { error: "Post not found." };
-        return;
-    }
-
-    const permission = can.delete(ctx.state.user, post);
-
-    if (!permission.granted) {
-        ctx.status = 403;
-        ctx.body = { error: "You do not own this post." };
-        return;
-    }
+    const post = ctx.state.post;
 
     try {
         if (post.image_url) {

@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRETKEY } = require('../../config');
 const fs = require('fs/promises');
 const path = require('path');
-const can = require('../permissions/user-permissions');
 
 async function registerUser(ctx) {
     const body = ctx.request.body;
@@ -72,22 +71,7 @@ async function changeUserName(ctx) {
     }
 
     const userID = ctx.state.user.id;
-    const user = await userModel.getUserByID(userID);
 
-    if (!user) {
-        //This should never happen since we are getting user from ctx.state.id
-        ctx.status = 404;
-        ctx.body = { error: "User not found" };
-        return;
-    }
-
-    const permission = can.update(ctx.state.user, user);
-
-    if (!permission.granted) {
-        ctx.status = 403;
-        ctx.body = { error: "You do not own this account." };
-        return;
-    }
     try {
         const result = await userModel.updateUserName(userID, body.username);
         if (result.affectedRows) {
@@ -107,21 +91,6 @@ async function changeUserName(ctx) {
 
 async function deleteUser(ctx) {
     const userID = ctx.params.id;
-
-    const user = await userModel.getUserByID(userID);
-    if (!user) {
-        ctx.status = 404;
-        ctx.body = { error: "User not found." };
-        return;
-    }
-
-    const permission = can.delete(ctx.state.user, user);
-
-    if (!permission.granted) {
-        ctx.status = 403;
-        ctx.body = { error: "You do not own this account." };
-        return;
-    }
 
     try {
         const posts = await postModel.getAllImageURLsByUserID(userID);

@@ -3,7 +3,7 @@ const cors = require('@koa/cors');
 const { koaBody } = require('koa-body');
 
 const db = require('./helpers/database');
-const requestLogger = require('./helpers/logger');
+const requestLogger = require('./middlewares/logger');
 
 const users = require('./routes/user-routes');
 const posts = require('./routes/post-routes');
@@ -15,14 +15,15 @@ const uploads = require('./routes/upload-routes.js');
 const { SERVER_PORT } = require('../config');
 
 const app = new Koa();
+
+app.use(requestLogger);
+
 app.use(cors());
 
 app.use(koaBody({
     multipart: true,
     parsedMethods: ['POST', 'PUT', 'PATCH', 'DELETE']
 }));
-
-app.use(requestLogger);
 
 app.use(users.routes())
 app.use(posts.routes());
