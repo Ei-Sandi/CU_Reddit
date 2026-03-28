@@ -12,7 +12,7 @@ const postLikes = require('./routes/post-likes');
 const commentLikes = require('./routes/comment_likes');
 const uploads = require('./routes/uploads.js');
 
-const { SERVER_PORT } = require('./config');
+const { SERVER_PORT } = require('../config');
 
 const app = new Koa();
 app.use(cors());
@@ -33,9 +33,14 @@ app.use(uploads.routes());
 
 db.initializeDB()
     .then(() => {
-        app.listen(SERVER_PORT);
-        console.log(`Server running on port ${SERVER_PORT}`);
+        if (process.env.NODE_ENV !== 'test') {
+            app.listen(SERVER_PORT, () => {
+                console.log(`Server running on port ${SERVER_PORT}`);
+            });
+        }
     })
     .catch((error) => {
         console.error("Failed to initialize database:", error);
     });
+
+module.exports = app;
