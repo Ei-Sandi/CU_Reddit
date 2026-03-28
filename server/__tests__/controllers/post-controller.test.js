@@ -11,6 +11,7 @@ describe('Post Controller (Unit)', () => {
     beforeEach(() => {
         ctx = { 
             params: {}, 
+            query: {},
             request: { body: {} }, 
             state: { user: { id: 1 }, post: undefined }, 
             status: undefined, 
@@ -32,7 +33,18 @@ describe('Post Controller (Unit)', () => {
             await postController.getAllPosts(ctx);
             
             expect(ctx.body).toEqual(mockPosts);
-            expect(postModel.getAllPosts).toHaveBeenCalled();
+            expect(postModel.getAllPosts).toHaveBeenCalledWith(5, 0);
+        });
+
+        it('should get all posts with limits and pagination', async () => {
+            ctx.query = { limit: '10', page: '2' };
+            const mockPosts = [{ id: 1, content: 'Post 1' }];
+            postModel.getAllPosts.mockResolvedValue(mockPosts);
+            
+            await postController.getAllPosts(ctx);
+            
+            expect(ctx.body).toEqual(mockPosts);
+            expect(postModel.getAllPosts).toHaveBeenCalledWith(10, 10);
         });
     });
 
@@ -45,7 +57,7 @@ describe('Post Controller (Unit)', () => {
             await postController.getPostByUserID(ctx);
 
             expect(ctx.body).toEqual(mockPosts);
-            expect(postModel.getPostByUserID).toHaveBeenCalledWith(1);
+            expect(postModel.getPostByUserID).toHaveBeenCalledWith(1, 5, 0);
         });
     });
 
