@@ -1,5 +1,4 @@
 const model = require('../models/comment-model');
-const can = require('../permissions/comment-permissions');
 
 async function getAllCommentsOfAPost(ctx) {
     const postID = ctx.params.post_id;
@@ -39,21 +38,6 @@ async function editComment(ctx) {
     }
 
     const commentID = ctx.params.comment_id;
-    const comment = await model.getCommentByCommentID(commentID);
-
-    if (!comment) {
-        ctx.status = 404;
-        ctx.body = { error: "Comment not found." };
-        return;
-    }
-
-    const permission = can.update(ctx.state.user, comment);
-
-    if (!permission.granted) {
-        ctx.status = 403;
-        ctx.body = { error: "You do not own this comment." };
-        return;
-    }
 
     try {
         const result = await model.updateComment(commentID, body.content);
@@ -75,21 +59,6 @@ async function editComment(ctx) {
 // TODO: let the post owner delete any comment on his post
 async function deleteComment(ctx) {
     const commentID = ctx.params.comment_id;
-
-    const comment = await model.getCommentByCommentID(commentID);
-    if (!comment) {
-        ctx.status = 404;
-        ctx.body = { error: "Comment not found." };
-        return;
-    }
-
-    const permission = can.delete(ctx.state.user, comment);
-
-    if (!permission.granted) {
-        ctx.status = 403;
-        ctx.body = { error: "You do not own this comment." };
-        return;
-    }
 
     try {
         const result = await model.deleteComment(commentID);

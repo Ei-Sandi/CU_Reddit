@@ -24,7 +24,7 @@
     "supertest": "^7.2.2"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "node src/app.js",
     "test": "cross-env NODE_ENV=test jest --forceExit"
   }
 }
