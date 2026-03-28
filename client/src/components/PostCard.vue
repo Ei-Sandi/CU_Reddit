@@ -14,7 +14,8 @@ const props = defineProps({
   created_at: String,
   imageURL: String,
   user_id: [String, Number],
-  likes_count: { type: Number, default: 0 }
+  likes_count: { type: Number, default: 0 },
+  comments_count: { type: Number, default: 0}
 })
 
 const isEditing = ref(false);
@@ -25,6 +26,7 @@ const likeCount = ref(props.likes_count);
 const showComments = ref(false);
 const newComment = ref('');
 const postComments = ref([]);
+const commentCount = ref(props.comments_count);
 const commentsLoading = ref(false);
 
 onMounted(async () => {
@@ -181,6 +183,7 @@ async function handleCommentSubmit() {
 
     if (response.ok) {
       newComment.value = '';
+      commentCount.value++;
       await fetchComments();
     } else {
       const data = await response.json();
@@ -225,9 +228,14 @@ async function handleCommentSubmit() {
       <img :alt="username + ' post image'" :src="imageURL" />
     </div>
 
-    <div class="stats-row" v-if="likeCount > 0">
-      <LikeFilled style="color: #1890ff; margin-right: 6px;" />
-      <span class="stats-text">{{ likeCount }} {{ likeCount === 1 ? 'Like' : 'Likes' }}</span>
+    <div class="stats-row" v-if="likeCount > 0 || commentCount > 0">
+      <div v-if="likeCount > 0" style="display: flex; align-items: center;">
+        <LikeFilled style="color: #1890ff; margin-right: 6px;" />
+        <span class="stats-text">{{ likeCount }} {{ likeCount === 1 ? 'Like' : 'Likes' }}</span>
+      </div>
+      <div v-if="commentCount > 0" style="margin-left: auto;">
+        <span class="stats-text" style="color: #666; font-size: 13px;">{{ commentCount }} {{ commentCount === 1 ? 'Comment' : 'Comments' }}</span>
+      </div>
     </div>
 
     <template #actions>
