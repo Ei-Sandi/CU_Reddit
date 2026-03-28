@@ -16,7 +16,7 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "role-acl": "^4.5.4",
-    "uuid": "^13.0.0"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
