@@ -9,10 +9,12 @@ exports.getAllPosts = async function getAllPosts() {
             posts.content, 
             posts.image_url, 
             posts.created_at,
-            COUNT(posts_likes.id) AS likes_count
+            COUNT(DISTINCT posts_likes.id) AS likes_count,
+            COUNT(DISTINCT comments.id) AS comments_count
         FROM posts
         JOIN users ON posts.user_id = users.id
         LEFT JOIN posts_likes ON posts.id = posts_likes.post_id
+        LEFT JOIN comments ON comments.post_id = posts.id
         GROUP BY posts.id, users.username, posts.user_id, posts.content, posts.image_url, posts.created_at;
     `;
     const data = await db.run_query(query);
@@ -28,10 +30,12 @@ exports.getPostByUserID = async function getPostByUserID(userID) {
             posts.content, 
             posts.image_url, 
             posts.created_at,
-            COUNT(posts_likes.id) AS likes_count
+            COUNT(DISTINCT posts_likes.id) AS likes_count,
+            COUNT(DISTINCT comments.id) AS comments_count
         FROM posts
         JOIN users ON posts.user_id = users.id
         LEFT JOIN posts_likes ON posts.id = posts_likes.post_id
+        LEFT JOIN comments ON comments.post_id = posts.id
         WHERE posts.user_id = ?
         GROUP BY posts.id, users.username, posts.user_id, posts.content, posts.image_url, posts.created_at;
     `;
