@@ -14,7 +14,7 @@ describe('Post Model Unit Tests', () => {
 
         const result = await postModel.getAllPosts();
 
-        expect(db.run_query).toHaveBeenCalledWith(expect.stringContaining('COUNT(DISTINCT posts_likes.id)'));
+        expect(db.run_query).toHaveBeenCalledWith(expect.stringContaining('LIMIT ? OFFSET ?'), [5, 0]);
         expect(result).toEqual(mockPosts);
     });
 
@@ -24,7 +24,7 @@ describe('Post Model Unit Tests', () => {
 
         const result = await postModel.getPostByUserID(123);
 
-        expect(db.run_query).toHaveBeenCalledWith(expect.any(String), [123]);
+        expect(db.run_query).toHaveBeenCalledWith(expect.stringContaining('LIMIT ? OFFSET ?'), [123, 5, 0]);
         expect(result).toEqual(mockPosts);
     });
 

@@ -3,12 +3,21 @@ const fs = require('fs/promises');
 const path = require('path');
 
 async function getAllPosts(ctx) {
-    ctx.body = await model.getAllPosts();
+    const limit = ctx.query.limit ? parseInt(ctx.query.limit) : 5;
+    const page = ctx.query.page ? parseInt(ctx.query.page) : 1;
+    const offset = (page - 1) * limit;
+
+    ctx.body = await model.getAllPosts(limit, offset);
 }
 
 async function getPostByUserID(ctx) {
     const userID = ctx.params.user_id;
-    ctx.body = await model.getPostByUserID(userID);
+
+    const limit = ctx.query.limit ? parseInt(ctx.query.limit) : 5;
+    const page = ctx.query.page ? parseInt(ctx.query.page) : 1;
+    const offset = (page - 1) * limit;
+
+    ctx.body = await model.getPostByUserID(userID, limit, offset);
 }
 
 async function createNewPost(ctx) {

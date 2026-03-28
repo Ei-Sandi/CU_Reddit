@@ -1,6 +1,6 @@
 const db = require('../helpers/database');
 
-exports.getAllPosts = async function getAllPosts() {
+exports.getAllPosts = async function getAllPosts(limit = 5, offset = 0) {
     const query = `
         SELECT 
             users.username, 
@@ -15,13 +15,15 @@ exports.getAllPosts = async function getAllPosts() {
         JOIN users ON posts.user_id = users.id
         LEFT JOIN posts_likes ON posts.id = posts_likes.post_id
         LEFT JOIN comments ON comments.post_id = posts.id
-        GROUP BY posts.id, users.username, posts.user_id, posts.content, posts.image_url, posts.created_at;
+        GROUP BY posts.id, users.username, posts.user_id, posts.content, posts.image_url, posts.created_at
+        ORDER BY posts.created_at DESC, posts.id DESC
+        LIMIT ? OFFSET ?;
     `;
-    const data = await db.run_query(query);
+    const data = await db.run_query(query, [Number(limit), Number(offset)]);
     return data;
 }
 
-exports.getPostByUserID = async function getPostByUserID(userID) {
+exports.getPostByUserID = async function getPostByUserID(userID, limit = 5, offset = 0) {
     const query = `
         SELECT 
             users.username, 
@@ -37,9 +39,11 @@ exports.getPostByUserID = async function getPostByUserID(userID) {
         LEFT JOIN posts_likes ON posts.id = posts_likes.post_id
         LEFT JOIN comments ON comments.post_id = posts.id
         WHERE posts.user_id = ?
-        GROUP BY posts.id, users.username, posts.user_id, posts.content, posts.image_url, posts.created_at;
+        GROUP BY posts.id, users.username, posts.user_id, posts.content, posts.image_url, posts.created_at
+        ORDER BY posts.created_at DESC, posts.id DESC
+        LIMIT ? OFFSET ?;
     `;
-    const data = await db.run_query(query, [userID]);
+    const data = await db.run_query(query, [userID, Number(limit), Number(offset)]);
     return data;
 }
 
