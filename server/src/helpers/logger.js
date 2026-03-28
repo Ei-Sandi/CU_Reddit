@@ -10,7 +10,8 @@ const requestLogger = async (ctx, next) => {
     await next();
     
     const duration = Date.now() - start;
-    const logEntry = `[${new Date().toISOString()}] ${ctx.method} ${ctx.originalUrl} - status: ${ctx.status} - ${duration}ms\n`;
+    const username = ctx.state?.user?.username || 'Public';
+    const logEntry = `[${new Date().toISOString()}] ${ctx.method} ${ctx.originalUrl} - User: ${username} - status: ${ctx.status} - ${duration}ms\n`;
     
     logStream.write(logEntry);
 };

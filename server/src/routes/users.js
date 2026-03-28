@@ -1,12 +1,11 @@
 const Router = require('koa-router');
-const bodyParser = require('koa-bodyparser');
 
 const userModel = require('../models/users');
 const postModel = require('../models/posts');
 
 const auth = require('../controllers/auth');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRETKEY } = require('../config');
+const { JWT_SECRETKEY } = require('../../config');
 
 const { validateUserRegistration, validateUsernameUpdate } = require('../controllers/validation');
 
@@ -18,9 +17,9 @@ const can = require('../permissions/users');
 const prefix = '/api/v1/users';
 const router = new Router({ prefix: prefix });
 
-router.post('/', bodyParser(), validateUserRegistration, registerUser);
+router.post('/', validateUserRegistration, registerUser);
 router.post('/login', auth.requireBasic, loginUser);
-router.put('/', bodyParser(), auth.requireJWT, validateUsernameUpdate, changeUserName);
+router.put('/', auth.requireJWT, validateUsernameUpdate, changeUserName);
 router.del('/:id', auth.requireJWT, deleteUser);
 
 async function registerUser(ctx) {
