@@ -1,0 +1,411 @@
+openapi: 3.0.0
+info:
+  title: Coventry University Student Network API
+  description: API for a Reddit-like platform for Coventry University students.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: "Basic authentication. Please use your registered email address as the username."
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /api/v1/users:
+    get:
+      summary: Get all users
+      description: Returns a list of all users. Requires admin role.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of users.
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+                - retypePassword
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  example: john_doe
+                email:
+                  type: string
+                  format: email
+                  pattern: "^[a-zA-Z0-9._%+-]+@coventry\\.ac\\.uk$"
+                  example: john.doe@coventry.ac.uk
+                password:
+                  type: string
+                  minLength: 6
+                  pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$"
+                  example: SecurePass123
+                retypePassword:
+                  type: string
+                  example: SecurePass123
+      responses:
+        '201':
+          description: User registered successfully.
+        '400':
+          description: Validation error.
+        '409':
+          description: Conflict (username/email exists).
+    put:
+      summary: Update username
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+                  example: new_username_123
+      responses:
+        '200':
+          description: Username updated successfully.
+  
+  /api/v1/users/login:
+    post:
+      summary: Login user
+      description: Provide your registered email (as the username) and password via Basic Authentication.
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: Login successful. Returns JWT.
+        '401':
+          description: Unauthorized.
+
+  /api/v1/users/{id}:
+    delete:
+      summary: Delete user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User deleted successfully.
+
+  /api/v1/posts:
+    get:
+      summary: Get all posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of posts.
+    post:
+      summary: Create a new post
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: "Just finished my 6005CMD coursework! The lab session was intense but I finally got the API working."
+                imageURL:
+                  type: string
+                  nullable: true
+                  example: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97"
+      responses:
+        '201':
+          description: Post created successfully.
+
+  /api/v1/posts/{user_id}:
+    get:
+      summary: Get posts by user ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of posts for the specific user.
+
+  /api/v1/posts/{post_id}:
+    put:
+      summary: Update a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: "Updated post content! Finally passed all the unit tests."
+                imageURL:
+                  type: string
+                  nullable: true
+                  example: "https://images.unsplash.com/photo-1542831371-29b0f74f9713"
+      responses:
+        '200':
+          description: Post updated successfully.
+    delete:
+      summary: Delete a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post deleted successfully.
+
+  /api/v1/comments/{post_id}:
+    get:
+      summary: Get comments for a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of comments for the given post.
+    post:
+      summary: Create a comment on a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: "Great job! Did you use JWT for authentication?"
+      responses:
+        '201':
+          description: Comment created successfully.
+
+  /api/v1/comments/{comment_id}:
+    put:
+      summary: Update a comment
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: comment_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: "Edited: Great job! I just realized you used basic auth."
+      responses:
+        '200':
+          description: Comment updated successfully.
+    delete:
+      summary: Delete a comment
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: comment_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Comment deleted successfully.
+
+  /api/v1/post_likes/{post_id}:
+    post:
+      summary: Like a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Post liked successfully.
+    delete:
+      summary: Remove a like from a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post like removed successfully.
+
+  /api/v1/post_likes/{post_id}/is_liked:
+    get:
+      summary: Check if post is liked by the current user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Boolean response indicating link status.
+
+  /api/v1/comment_likes/{comment_id}:
+    post:
+      summary: Like a comment
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: comment_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Comment liked successfully.
+    delete:
+      summary: Remove a like from a comment
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: comment_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Comment like removed successfully.
+
+  /api/v1/comment_likes/{comment_id}/is_liked:
+    get:
+      summary: Check if comment is liked by the current user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: comment_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Boolean response indicating link status.
+
+  /api/v1/images:
+    post:
+      summary: Upload an image
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                upload:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Image uploaded successfully.
+
+  /api/v1/images/{filename}:
+    get:
+      summary: Retrieve an uploaded image
+      parameters:
+        - in: path
+          name: filename
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Image returned.

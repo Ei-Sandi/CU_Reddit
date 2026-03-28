@@ -14,6 +14,10 @@ const uploads = require('./routes/upload-routes.js');
 
 const { SERVER_PORT } = require('../config');
 
+const { koaSwagger } = require('koa2-swagger-ui');
+const yaml = require('yamljs');
+const spec = yaml.load('./schemas/openapi.yaml');
+
 const app = new Koa();
 
 app.use(requestLogger);
@@ -25,6 +29,7 @@ app.use(koaBody({
     parsedMethods: ['POST', 'PUT', 'PATCH', 'DELETE']
 }));
 
+app.use(koaSwagger({ routePrefix: '/api/v1/docs', swaggerOptions: { spec } }));
 app.use(users.routes())
 app.use(posts.routes());
 app.use(comments.routes());
