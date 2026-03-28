@@ -4,19 +4,43 @@
       <a-form :model="formState" @finish="onFinish" layout="vertical">
 
         <a-form-item label="Username" name="username"
-          :rules="[{ required: true, message: 'Please input your username!' }]">
+          :rules="[
+            { required: true, message: 'Please input your username!' },
+            { min: 3, message: 'Username must be at least 3 characters long!' }
+          ]">
           <a-input v-model:value="formState.username" class="auth-input" />
         </a-form-item>
 
-        <a-form-item label="Email" name="email" :rules="[{ required: true, type: 'email' }]">
+        <a-form-item label="Email" name="email" 
+          :rules="[
+            { required: true, message: 'Please input your email!' },
+            { type: 'email', message: 'Please enter a valid email address!' },
+            { pattern: /^[a-zA-Z0-9._%+-]+@coventry\.ac\.uk$/, message: 'Email must be a @coventry.ac.uk address!' }
+          ]">
           <a-input v-model:value="formState.email" class="auth-input" />
         </a-form-item>
 
-        <a-form-item label="Password" name="password" :rules="[{ required: true }]">
+        <a-form-item label="Password" name="password" 
+          :rules="[
+            { required: true, message: 'Please input your password!' },
+            { min: 6, message: 'Password must be at least 6 characters long!' },
+            { pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/, message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number!' }
+          ]">
           <a-input-password v-model:value="formState.password" class="auth-input" />
         </a-form-item>
 
-        <a-form-item label="Retype Password" name="retypePassword" :rules="[{ required: true }]">
+        <a-form-item label="Retype Password" name="retypePassword" 
+          :rules="[
+            { required: true, message: 'Please retype your password!' },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('Passwords do not match!'));
+              },
+            }),
+          ]">
           <a-input-password v-model:value="formState.retypePassword" class="auth-input" />
         </a-form-item>
 

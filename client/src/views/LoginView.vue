@@ -3,7 +3,11 @@
     <a-card class="auth-card" :headStyle="{ textAlign: 'center' }" title="Login">
       <a-form :model="formState" @finish="onFinish" layout="vertical">
 
-        <a-form-item label="Email" name="email" :rules="[{ required: true }]">
+        <a-form-item label="Email" name="email" :rules="[
+          { required: true, message: 'Please input your email!' },
+          { type: 'email', message: 'Please enter a valid email address!' },
+          { pattern: /^[a-zA-Z0-9._%+-]+@coventry\.ac\.uk$/, message: 'Email must be a @coventry.ac.uk address!' }
+        ]">
           <a-input v-model:value="formState.email" class="auth-input" />
         </a-form-item>
 
