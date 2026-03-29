@@ -1,4 +1,3 @@
-
 # 6005CMD_Coursework
 Submission for 6005CMD - social media platform
 
@@ -18,16 +17,20 @@ The backend server is a RESTful API powered by **Node.js** and **Koa**. It acts 
 
 ## How to Start
 
-To run the complete platform locally, you must start both the server and the client in separate terminal instances.
+To run the complete platform locally, you must create the database and start both the server and the client in separate terminal instances.
 
-### 1. Start the Backend Server
+### 1. Database Setup
+- Create a database with the name `cu_reddit` first.
+
+### 2. Start the Backend Server
 ```sh
 cd server
 npm install
+node scripts/seed-db.js  # Populate the database first
 npm start  # or: node src/app.js
 ```
 
-### 2. Start the Frontend Client
+### 3. Start the Frontend Client
 ```sh
 cd client
 npm install
@@ -48,6 +51,7 @@ The backend REST API is fully documented using the OpenAPI specification. You ca
 
 Reliability and stability are maintained through a robust automated testing mechanism on the backend. 
 - The `server/__tests__/` directory contains a comprehensive suite that verifies models, routes, middlewares, permissions, strategies, and controllers.
+- Create a database with the name `test_db` first before running tests!
 - To execute the automated tests:
   ```sh
   cd server
