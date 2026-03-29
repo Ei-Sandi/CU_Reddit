@@ -16,7 +16,8 @@ const { SERVER_PORT } = require('../config');
 
 const { koaSwagger } = require('koa2-swagger-ui');
 const yaml = require('yamljs');
-const spec = yaml.load('./schemas/openapi.yaml');
+const path = require('path');
+const spec = yaml.load(path.join(__dirname, 'schemas', 'openapi.yaml'));
 
 const app = new Koa();
 
