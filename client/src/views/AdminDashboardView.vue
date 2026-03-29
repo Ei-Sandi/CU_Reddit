@@ -75,10 +75,10 @@ onMounted(() => {
 <template>
   <div style="padding: 20px;">
     <h1>Admin Dashboard</h1>
-    <a-table :dataSource="users" :columns="columns" rowKey="ID" :loading="loading">
+    <a-table :dataSource="users" :columns="columns" rowKey="id" :loading="loading">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
-          <a-button type="primary" danger @click="deleteUser(record.ID)">Delete</a-button>
+          <a-button type="primary" danger @click="deleteUser(record.id)">Delete</a-button>
         </template>
       </template>
     </a-table>
