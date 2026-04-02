@@ -1,7 +1,18 @@
-# 6005CMD_Coursework
-Submission for 6005CMD - social media platform
+# CU_reddit
 
-This repository contains a full-stack social media platform, built as the coursework submission for the 6005CMD module.
+This repository contains a full-stack social media platform, built for coursework submission for the 6005CMD module at Coventry University. 
+
+## Key Features
+
+This platform was built with a focus on modularity and security, moving beyond basic CRUD to provide a production-ready experience.
+
+- Advanced Authentication: Dual-strategy support using JWT and Basic Auth, featuring session security with auto-logout functionality.
+- Granular RBAC: A custom Role-Based Access Control system. On the frontend, this is powered by a custom v-can directive to conditionally render UI based on permissions.
+- Layered Backend Architecture: A robust Koa.js API utilizing multiple middleware layers for logging, schema validation, authentication, and error handling.
+- Dynamic Content: Full post and comment management featuring server-side pagination and a responsive grid layout.
+- Developer-First Tooling: Includes a comprehensive automated test suite and interactive OpenAPI (Swagger) documentation for all REST endpoints.
+- Data Integrity: Strict server-side validation paired with immediate client-side feedback to ensure a clean and secure database.
+
 
 ## Architecture Overview
 
@@ -57,3 +68,7 @@ Reliability and stability are maintained through a robust automated testing mech
   cd server
   npm test
   ```
+
+## Personal Reflection
+
+- Developing a web application is not just about a flashy UI and a working server. It’s about building secure and maintainable software by validating data on both the client and server sides, stacking multiple middleware layers for authentication, validation, and RBAC, breaking down components for maximum unit test coverage, documenting the API, optimizing database queries, and implementing proper logging and monitoring.
